@@ -1,0 +1,44 @@
+{
+  "_from": "arizona",
+  "_id": "arizona@0.0.1",
+  "_inBundle": false,
+  "_integrity": "sha512-qneNDyqP+LEH2f7OE7zTwZ5oNOyPmzD92Na0YHmBz4iM2yonURUZlYmC3A0LLhmMFJhT55UdvVrqa2iRMzQEFw==",
+  "_location": "/arizona",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "arizona",
+    "name": "arizona",
+    "escapedName": "arizona",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/arizona/-/arizona-0.0.1.tgz",
+  "_shasum": "d43380af36410c7f487cd752617d959a63973f7c",
+  "_spec": "arizona",
+  "_where": "/Users/chris/arizona",
+  "author": {
+    "name": "kinggizzard"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "animate.css": "^4.1.0",
+    "aseprite": "^0.2.1",
+    "string-similarity": "^4.0.1"
+  },
+  "deprecated": false,
+  "description": "A lightweight, fully-open source personal assistant. Fully customizable.",
+  "license": "ISC",
+  "main": "main.js",
+  "name": "arizona",
+  "scripts": {
+    "start": "electron ."
+  },
+  "version": "0.0.1"
+}
