@@ -1,129 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
-    <title>Hello World!</title>
-    <!-- https://electronjs.org/docs/tutorial/security#csp-meta-tag -->
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
-
-	<link rel="stylesheet" type="text/css" href="style.css">
-	<link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css"
-  />
+      <meta charset="UTF-8">
+      <title>Hello World!</title>
+      <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+	   <link rel="stylesheet" type="text/css" href="style.css">
+     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.0/animate.css">
   </head>
-
   <body id='body'>
     <div class="section"><input class="inputField" id="inputField" type='text' onclick="this.select()"></div>
-
-  <div class="section colorBackground" id="sectionA">
-    <h1 id="output" class="">Howdy!</h1>
-	<br/>
-	</div>
+    <div class="section colorBackground" id="sectionA"><h1 id="output" class="">Howdy!</h1><br/></div>
+    <div style="visibility:hidden;"class="section notification colorBackground" id="notification"><h2 id="notifText"></h2></div>
   <script src="https://sdk.scdn.co/spotify-player.js"></script>
-	<script>
-		const animateCSS = (element, animation, prefix = 'animate__') =>
-	  // We create a Promise and return it
-		new Promise((resolve, reject) => {
-		const animationName = `${prefix}${animation}`;
-		const node = document.querySelector(element);
-
-		node.classList.add(`${prefix}animated`, animationName);
-
-		// When the animation ends, we clean the classes and resolve the Promise
-		function handleAnimationEnd() {
-		  node.classList.remove(`${prefix}animated`, animationName);
-		  node.removeEventListener('animationend', handleAnimationEnd);
-
-		  resolve('Animation ended');
-		}
-
-		node.addEventListener('animationend', handleAnimationEnd);
-		});
-		const output = document.getElementById("output");
-		document.getElementById("sectionA").addEventListener('click', function(){
-			document.getElementById("inputField").focus();
-		})
-		var inputField = document.getElementById("inputField");
-		document.getElementById("inputField").focus();
-		const { ipcRenderer } = require('electron')
-		//console.log(ipcRenderer.sendSync('synchronous-message', 'ping')) // prints "pong"
-
-		ipcRenderer.on('asynchronous-reply', (event, arg) => {
-		  console.log(arg) // prints "pong"
-
-		  output.innerHTML = arg;
-		  animateCSS("#output", 'bounce');
-		  //document.write(arg);
-		})
-
-		ipcRenderer.on('statusUpdate', function(event, data){
-			console.log(data);
-      output.innerHTML = data;
-		})
-    ipcRenderer.on('artwork', function(event, data){
-			console.log(data);
-      var sectionA = document.getElementById('sectionA');
-      sectionA.style.backgroundImage = "url('" + data + "')";
-      sectionA.classList.remove('colorBackground');
-      sectionA.classList.add('albumBackground');
-      //output.innerHTML = "Now playing: " + data + " by " + data;
-		})
-    ipcRenderer.on('trackInfo', function(event, data){
-			console.log(data);
-      output.innerHTML = "Now playing: " + data.split(";")[1] + " by " + data.split(";")[0];
-		})
-
-		window.addEventListener("keyup", sendQuery, true);
-		function sendQuery(e){
-		if(e.keyCode == 13){
-			if(inputField.value != ""){
-				var send = inputField.value;
-				inputField.value = "";
-				output.value ="....";
-				ipcRenderer.send('asynchronous-query', send);
-				}
-			}
-		}
-
-		animateCSS("#output", 'bounce');
-		animateCSS("#body", 'slideInUp');
-
-
-
-
-
-
-  //console.log("heye")
-    window.onSpotifyWebPlaybackSDKReady = () => {
-      const token = 'BQCpk4JupRLsV8kNBA1N-QZ0ANkjZVaDaBW1f5yp30HrTuaz3UUUIrlgTlUcMDkObokixSyN9PbYpT-hehJ77rcHkfpMqH3k5wKZqWM42tXEODEH3GClLMG2aM3SsaMYk6h-510csAoi7eoZYtVi72CHuGZl2CeHDuInGQ';
-      const player = new Spotify.Player({
-        name: 'Web Playback SDK Quick Start Player',
-        getOAuthToken: cb => { cb(token); }
-      });
-
-      // Error handling
-      player.addListener('initialization_error', ({ message }) => { console.error(message); });
-      player.addListener('authentication_error', ({ message }) => { console.error(message); });
-      player.addListener('account_error', ({ message }) => { console.error(message); });
-      player.addListener('playback_error', ({ message }) => { console.error(message); });
-
-      // Playback status updates
-      player.addListener('player_state_changed', state => { console.log(state); });
-
-      // Ready
-      player.addListener('ready', ({ device_id }) => {
-        console.log('Ready with Device ID', device_id);
-      });
-
-      // Not Ready
-      player.addListener('not_ready', ({ device_id }) => {
-        console.log('Device ID has gone offline', device_id);
-      });
-
-      // Connect to the player!
-      player.connect();
-    };
-  </script>
+  <link rel="stylesheet" src="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.0/animate.css">
+  <script src="renderer.js"></script>
   </body>
 </html>

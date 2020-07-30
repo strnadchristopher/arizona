@@ -39,15 +39,15 @@ var win;
 
 function createWindow () {
   const windowWidth = 400;
-  const windowHeight = 400;
+  const windowHeight = 500;
   const { width, height } = screen.getPrimaryDisplay().workAreaSize
   const xOffset = 15;
   const winX = width - windowWidth - xOffset;
   const winY = height - windowHeight;
   // Create the browser window.
   win = new BrowserWindow({
-    width: 400,
-    height: 400,
+    width: windowWidth,
+    height: windowHeight,
 	transparent: true,
 	frame: false,
 	x:winX,
@@ -131,7 +131,7 @@ function createWindow () {
 		getArtwork();
 	})
   globalShortcut.register("ctrl+shift+s", function(){
-    quickStart();np
+    //listen().catch(console.error);
   })
 
 
@@ -152,15 +152,15 @@ const textToSpeech = require('@google-cloud/text-to-speech');
 const util = require('util');
 // Creates a client
 const client = new textToSpeech.TextToSpeechClient();
-async function quickStart() {
+async function speak(sString) {
   // The text to synthesize
-  const text = 'hello, world!';
+  const text = sString;
 
   // Construct the request
   const request = {
     input: {text: text},
     // Select the language and SSML voice gender (optional)
-    voice: {languageCode: 'en-US', ssmlGender: 'NEUTRAL'},
+    voice: {languageCode: 'en-US', ssmlGender: 'FEMALE'},
     // select the type of audio encoding
     audioConfig: {audioEncoding: 'MP3'},
   };
@@ -171,9 +171,50 @@ async function quickStart() {
   const writeFile = util.promisify(fs.writeFile);
   await writeFile('output.mp3', response.audioContent, 'binary');
   console.log('Audio content written to file: output.mp3');
-}
-quickStart();
+  var player = require('play-sound')(opts = {})
 
+// $ mplayer foo.mp3
+  player.play('output.mp3', function(err){
+    if (err) throw err
+  })
+}
+
+async function listen() {
+  // Imports the Google Cloud client library
+  const speech = require('@google-cloud/speech');
+
+  // Creates a client
+  const client = new speech.SpeechClient();
+
+  // The name of the audio file to transcribe
+  const fileName = 'input.wav';
+
+  // Reads a local audio file and converts it to base64
+  const file = fs.readFileSync(fileName);
+  const audioBytes = file.toString('base64');
+
+  // The audio file's encoding, sample rate in hertz, and BCP-47 language code
+  const audio = {
+    content: audioBytes,
+  };
+  const config = {
+    encoding: 'LINEAR16',
+    sampleRateHertz: 16000,
+    languageCode: 'en-US',
+  };
+  const request = {
+    audio: audio,
+    config: config,
+  };
+
+  // Detects speech in the audio file
+  const [response] = await client.recognize(request);
+  const transcription = response.results
+    .map(result => result.alternatives[0].transcript)
+    .join('\n');
+  console.log(`Transcription: ${transcription}`);
+}
+//listen().catch(console.error);
 
 var artworkURL;
 var spotifyUpdateInterval = 3; //In seconds
@@ -184,9 +225,10 @@ function checkSpotifyArt(){
 async function getArtwork(){
   const {stdout} = await execa('osascript', ['-e',
   'tell application "Spotify" to return current track\'s artwork url']);
-  if(stdout != "artworkURL"){
+  if(stdout != artworkURL){
     artworkURL = stdout;
     win.webContents.send('artwork', stdout);
+    showNotification("Now Playing");
     getTrackInfo();
   }
 
@@ -296,12 +338,19 @@ app.on('activate', () => {
   }
 })
 
+
+
+
 var currentMessage;
 function readAnswers(message){
   if(message.startsWith("!")){
-    currentMessage = message;
-    win.webContents.send('statusUpdate', message.substring(1,message.length));
-  }else{
+    currentMessage = message.substring(1,message.length);
+    //speak(currentMessage);
+    win.webContents.send('statusUpdate', currentMessage);
+  }else if(message.startsWith("*")){
+    currentMessage = message.substring(1,message.length);
+    win.webContents.send('lyrics', currentMessage);
+  }{
     console.log(message);
 
   }
@@ -323,6 +372,9 @@ function runService(workerData) {
   //setTimeout(() => worker.postMessage("you won't see me"), 100);
 }
 
+function showNotification(notif){
+  win.webContents.send('notification', notif);
+}
 
 async function run() {
   const result = runService({currentInput,inputs,responses});
@@ -346,55 +398,3 @@ ipcMain.on('synchronous-message', (event, arg) => {
   console.log(arg) // prints "ping"
   event.returnValue = 'Sync return';
 })
-
-
-
-/*
-//Speech to text
-var SpeechRecognition = BrowserWindow.webkitSpeechRecognition;
-
-var recognition = new SpeechRecognition();
-
-var Textbox = $('#textbox');
-var instructions = $('instructions');
-
-var Content = '';
-
-recognition.continuous = true;
-
-recognition.onresult = function(event) {
-
-  var current = event.resultIndex;
-
-  var transcript = event.results[current][0].transcript;
-
-    Content += transcript;
-    Textbox.val(Content);
-
-};
-
-recognition.onstart = function() {
-  instructions.text('Voice recognition is ON.');
-}
-
-recognition.onspeechend = function() {
-  instructions.text('No activity.');
-}
-
-recognition.onerror = function(event) {
-  if(event.error == 'no-speech') {
-    instructions.text('Try again.');
-  }
-}
-
-document.getElementById("body").on('click', function(e) {
-  if (Content.length) {
-    Content += ' ';
-  }
-  recognition.start();
-});
-
-Textbox.on('input', function() {
-  Content = $(this).val();
-})
-*/

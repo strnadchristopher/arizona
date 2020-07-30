@@ -93,34 +93,65 @@ function getAnswer(){
            input == "next"){
       nextTrack();
       parentPort.postMessage("!Playing next song.");
+  }else if(input == "lyrics"){
+      parentPort.postMessage("!Finding lyrics...")
+      getLyrics();
+  }else{
+  	for(var i in inputs){
+  		var splitString = inputs[i].split("/");
+  		for(var x in splitString){ //Each individual input string
+  			var distance = stringSimilarity.compareTwoStrings(input, splitString[x]); //Check distance //SOMETHING GOES WRONG HERE
+
+  			if(distance > greatestDistance){ // If its a match, or a better match than before
+  				lowestString = splitString[x];
+  				currentPick = i;
+  				greatestDistance = distance;
+  			}
+
+  			parentPort.postMessage(input + " and " + splitString[x] + ", Distance: " + distance);
+  			if(greatestDistance < 0){
+  				//event.reply('asynchronous-reply', responses[currentPick]);
+  			}
+  		}
+  	}
+    var responsePick = responses[currentPick];
+  	if(greatestDistance == 0){
+  		responsePick = "Sorry I think I just had a stroke, say that again?/Uh, sorry I like totally just spaced out./I literally have no idea what you just said.";
+  	}
+  	parentPort.postMessage("I think you said " + lowestString + ", Going with " + responsePick);
+  	parentPort.postMessage("!" + responsePick.split("/")[Math.floor(Math.random() * responsePick.split("/").length)]);
   }
-  async function nextTrack(){
-  	const {stdout} = await execa('osascript', ['-e',
-    'tell application "Spotify" to next track']);
-  	console.log(stdout);
-  }
-	for(var i in inputs){
-		var splitString = inputs[i].split("/");
-		for(var x in splitString){ //Each individual input string
-			var distance = stringSimilarity.compareTwoStrings(input, splitString[x]); //Check distance //SOMETHING GOES WRONG HERE
+}
 
-			if(distance > greatestDistance){ // If its a match, or a better match than before
-				lowestString = splitString[x];
-				currentPick = i;
-				greatestDistance = distance;
-			}
+async function getLyrics(trackData){
+  const lyrics = require('node-lyrics-api');
 
-			parentPort.postMessage(input + " and " + splitString[x] + ", Distance: " + distance);
-			if(greatestDistance < 0){
-				//event.reply('asynchronous-reply', responses[currentPick]);
-			}
-		}
-	}
-  var responsePick = responses[currentPick];
-	if(greatestDistance == 0){
+  const [artist, title] = await Promise.all([getArtist(), getTrackTitle()]);
 
-		responsePick = "Sorry I think I just had a stroke, say that again?/Uh, sorry I like totally just spaced out./I literally have no idea what you just said.";
-	}
-	parentPort.postMessage("I think you said " + lowestString + ", Going with " + responsePick);
-	parentPort.postMessage("!" + responsePick.split("/")[Math.floor(Math.random() * responsePick.split("/").length)]);
+
+  let ourSong = await lyrics(title + " " + artist);
+
+  if(ourSong.status.failed) return console.log('Bad Response');
+
+  console.log(ourSong.content[0].lyrics);
+
+  parentPort.postMessage("*" + ourSong.content[0].lyrics);
+  //lyrics('our song').then(l => console.log(l.content[0].lyrics));
+  //win.webContents.send('lyrics', ourSong.content[0].lyrics);
+}
+async function getArtist(){
+  const {stdout} = await execa('osascript', ['-e',
+  'tell application "Spotify" to return current track\'s artist']);
+  //console.log(art);
+  return stdout;
+}
+async function getTrackTitle(){
+  const {stdout} = await execa('osascript', ['-e',
+  'tell application "Spotify" to return current track\'s name']);
+  return stdout;
+}
+async function nextTrack(){
+  const {stdout} = await execa('osascript', ['-e',
+  'tell application "Spotify" to next track']);
+  console.log(stdout);
 }

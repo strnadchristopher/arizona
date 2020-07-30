@@ -19,7 +19,7 @@ input{
 	font-family: Poppins;
 }
 
-h1{
+h1,h2{
 	font-family: Poppins;
 	color:white;
 	//border-radius:0px;
@@ -71,17 +71,25 @@ body{
 	margin-bottom:20px;
 	background: linear-gradient(270deg, rgba(0,255,189,.5), rgba(133,14,13,.3), rgba(52, 47, 255,.6), rgba(251, 204, 86,.8));
   background-size: 800% 800%;
-	--webkit-animation: AnimationName 30s ease infinite, MoveUpDown 4s infinite ease-in-out;
-	animation: AnimationName 30s ease infinite, MoveUpDown 4s infinite ease-in-out;
-	--moz-animation: AnimationName 30s ease infinite, MoveUpDown 4s infinite ease-in-out;
+	--webkit-animation: AnimationName 30s ease infinite;
+	animation: AnimationName 30s ease infinite;
+	--moz-animation: AnimationName 30s ease infinite;
 
 }
-.section:last-of-type{
-	margin-top:25%;
+#sectionA{
+	margin-top:15px;
 	height:75%;
-	position:relative;
-	left:0;
-	bottom:0;
+	//position:relative;
+	//left:0;
+	//bottom:0;
+	overflow-y:scroll;
+
+}
+.albumBackground>h1{
+	border-radius:0px;
+	background-color: rgba(0,0,0,.5);
+	padding:5px;
+
 }
 .colorBackground{
 	background: linear-gradient(270deg, rgba(0,255,189,.5), rgba(133,14,13,.3), rgba(52, 47, 255,.6), rgba(251, 204, 86,.8));
@@ -89,6 +97,15 @@ body{
 	--webkit-animation: AnimationName 30s ease infinite, MoveUpDown 4s infinite ease-in-out;
 	animation: AnimationName 30s ease infinite, MoveUpDown 4s infinite ease-in-out;
 	--moz-animation: AnimationName 30s ease infinite, MoveUpDown 4s infinite ease-in-out;
+}
+
+.notification{
+	height:20%;
+	margin-top:15%;
+}
+.showingLyrics{
+	justify-content: flex-start;
+	align-items: flex-start;
 }
 
 .albumBackground{
@@ -100,32 +117,36 @@ body{
 	--webkit-animation: MoveUpDown 4s infinite ease-in-out;
 	animation: MoveUpDown 4s infinite ease-in-out;
 	--moz-animation: MoveUpDown 4s infinite ease-in-out;
+
 }
 
 
 
 @-webkit-keyframes MoveUpDown {
   0%, 100% {
-    bottom: 20px;
+    transform: translate(0,0);
+
   }
   50% {
-    bottom: 40px;
+    transform: translate(0,-40px);
   }
 }
 @keyframes MoveUpDown {
-  0%, 100% {
-    bottom: 20px;
+	0%, 100% {
+    transform: translate(0,0);
+
   }
   50% {
-    bottom: 40px;
+    transform: translate(0,-40px);
   }
 }
 @-moz-keyframes MoveUpDown {
-  0%, 100% {
-    bottom: 20px;
+	0%, 100% {
+    transform: translate(0,0);
+
   }
   50% {
-    bottom: 40px;
+    transform: translate(0,-40px);
   }
 }
 
