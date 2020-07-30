@@ -75,7 +75,9 @@ ipcRenderer.on('notification', function(event, data){
     notif.style.visibility = "visible";
     notifShowing = true;
     //animateCSS("#notification", "slideInUp");
+    setTimeout(function(){
 
+    }, 5000)
   //output.innerHTML = "Now playing: " + data.split(";")[1] + " by " + data.split(";")[0];
 })
 
