@@ -77,7 +77,7 @@ function createWindow () {
             }
         }
     ])
-
+    appIcon.setToolTip('Arizona')
     appIcon.setContextMenu(contextMenu);
 
   win.on('minimize',function(event){
@@ -130,7 +130,9 @@ function createWindow () {
   globalShortcut.register('f3', function() {
 		getArtwork();
 	})
-
+  globalShortcut.register("ctrl+shift+s", function(){
+    quickStart();np
+  })
 
 
 
@@ -142,9 +144,40 @@ function createWindow () {
   // Open the DevTools.
   loaded = true;
 }
+
+// Imports the Google Cloud client library
+const textToSpeech = require('@google-cloud/text-to-speech');
+
+// Import other required libraries
+const util = require('util');
+// Creates a client
+const client = new textToSpeech.TextToSpeechClient();
+async function quickStart() {
+  // The text to synthesize
+  const text = 'hello, world!';
+
+  // Construct the request
+  const request = {
+    input: {text: text},
+    // Select the language and SSML voice gender (optional)
+    voice: {languageCode: 'en-US', ssmlGender: 'NEUTRAL'},
+    // select the type of audio encoding
+    audioConfig: {audioEncoding: 'MP3'},
+  };
+
+  // Performs the text-to-speech request
+  const [response] = await client.synthesizeSpeech(request);
+  // Write the binary audio content to a local file
+  const writeFile = util.promisify(fs.writeFile);
+  await writeFile('output.mp3', response.audioContent, 'binary');
+  console.log('Audio content written to file: output.mp3');
+}
+quickStart();
+
+
 var artworkURL;
 var spotifyUpdateInterval = 3; //In seconds
-var t=setInterval(checkSpotifyArt,spotifyUpdateInterval * 1000);
+
 function checkSpotifyArt(){
   getArtwork();
 }
@@ -176,6 +209,13 @@ async function getTrackTitle(){
 }
 
 app.whenReady().then(createWindow)
+var onMac = false;
+if (process.platform == 'darwin') {
+  onMac = true;
+}
+if(onMac){
+  var t=setInterval(checkSpotifyArt,spotifyUpdateInterval * 1000);
+}
 
 /*function authorizeSpotify(){
 /*
