@@ -10,22 +10,15 @@ Escape - Hide assistant
 F5 - Refresh Assistant
 
 Full Features To Be Added:
-<<<<<<< HEAD
 
 Voice Control
 
-=======
-Voice Control
->>>>>>> df4d3d2722390f02dd7c5dce550630b5a7338571
 Config menu to set
  - Your name
  - Your city (for weather)
  - The name of your assistant
  - Colors and more
-<<<<<<< HEAD
- 
-=======
->>>>>>> df4d3d2722390f02dd7c5dce550630b5a7338571
+
  Running python scripts on command
 
 Known Bugs:
