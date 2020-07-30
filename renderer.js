@@ -53,14 +53,10 @@ ipcRenderer.on('trackInfo', function(event, data){
 
   var notifText = document.getElementById("notifText");
   notifText.innerHTML = data.split(";")[1] + " by " + data.split(";")[0];
-  if(!notifShowing){
-    notif.style.visibility = "visible";
-    notifShowing = true;
-    //animateCSS("#notification", "slideInUp");
 
-  }
-
-  //output.innerHTML = "Now playing: " + data.split(";")[1] + " by " + data.split(";")[0];
+  notif.style.visibility = "visible";
+  notifShowing = true;
+  //animateCSS("#notification", "slideInUp");
 })
 var showingLyrics = false;
 ipcRenderer.on('lyrics', function(event, data){
@@ -76,11 +72,10 @@ ipcRenderer.on('notification', function(event, data){
   var notif = document.getElementById("notification");
   var notifText = document.getElementById("notifText");
   notifText.innerHTML = data;
-  if(!notifShowing){
     notif.style.visibility = "visible";
     notifShowing = true;
     //animateCSS("#notification", "slideInUp");
-  }
+
   //output.innerHTML = "Now playing: " + data.split(";")[1] + " by " + data.split(";")[0];
 })
 

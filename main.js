@@ -349,6 +349,7 @@ function readAnswers(message){
     win.webContents.send('statusUpdate', currentMessage);
   }else if(message.startsWith("*")){
     currentMessage = message.substring(1,message.length);
+    win.webContents.send('notification', "Lyrics found");
     win.webContents.send('lyrics', currentMessage);
   }{
     console.log(message);
