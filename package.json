@@ -1,10 +1,13 @@
 {
   "_from": "arizona",
-  "_id": "arizona@0.0.3",
+  "_id": "arizona@0.0.4",
   "_inBundle": false,
-  "_integrity": "sha512-qneNDyqP+LEH2f7OE7zTwZ5oNOyPmzD92Na0YHmBz4iM2yonURUZlYmC3A0LLhmMFJhT55UdvVrqa2iRMzQEFw==",
+  "_integrity": "sha512-wEgMNFRDDVSm7RwNy6zpqDFsLsEvgM5Jv3vzAD01YVzisnggKoTg2x7sJQDkw5t6ywK8O1jvne1Ogg9+j3gpuQ==",
   "_location": "/arizona",
-  "_phantomChildren": {},
+  "_phantomChildren": {
+    "electron-download": "3.3.0",
+    "extract-zip": "1.7.0"
+  },
   "_requested": {
     "type": "tag",
     "registry": true,
@@ -19,15 +22,28 @@
     "#USER",
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/arizona/-/arizona-0.0.1.tgz",
-  "_shasum": "d43380af36410c7f487cd752617d959a63973f7c",
+  "_resolved": "https://registry.npmjs.org/arizona/-/arizona-0.0.3.tgz",
+  "_shasum": "b96731b280bae0ef2fb959d9bd6a2366f0fe5cd1",
   "_spec": "arizona",
-  "_where": "/Users/chris/arizona",
+  "_where": "C:\\Users\\strna\\Documents\\arizona",
   "author": {
     "name": "kinggizzard"
   },
-  "bundleDependencies": false,
-  "dependencies": {
+  "keywords": [
+    "siri",
+    "virtual assistant",
+    "electron"
+  ],
+  "build": {
+    "extraResources": [
+      {
+        "from": "./extraResources/**",
+        "to": "extraResources"
+      }
+    ]
+  },
+  "bundleDependencies": true,
+  "bundledDependencies": {
     "animate.css": "^4.1.0",
     "aseprite": "^0.2.1",
     "electron": "1.4.15",
@@ -42,15 +58,12 @@
   "main": "main.js",
   "name": "arizona",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "bundle-dependencies": "bundle-dependencies"
   },
-  "version": "0.0.3",
-  "build": {
-    "extraResources": [
-      {
-        "from": "./extraResources/**",
-        "to": "extraResources"
-      }
-    ]
+  "version": "0.0.4",
+  "dependencies": {
+    "@google-cloud/speech": "^4.1.1",
+    "@google-cloud/text-to-speech": "^3.1.0"
   }
 }

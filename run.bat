@@ -1,0 +1,2 @@
+CONSOLESTATE /Hide
+npm start
