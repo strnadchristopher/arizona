@@ -76,9 +76,9 @@ body{
 .colorBackground{
 	background: linear-gradient(270deg, rgba(0,255,189,.5), rgba(133,14,13,.3), rgba(52, 47, 255,.6), rgba(251, 204, 86,.8));
   background-size: 800% 800%;
-	--webkit-animation: BackgroundAnim 30s ease infinite, MoveUpDown 4s infinite ease-in-out;
-	animation: BackgroundAnim 30s ease infinite, MoveUpDown 4s infinite ease-in-out;
-	--moz-animation: BackgroundAnim 30s ease infinite, MoveUpDown 4s infinite ease-in-out;
+	--webkit-animation: BackgroundAnim 30s ease infinite, MoveUpDown 6s infinite ease-in-out;
+	animation: BackgroundAnim 30s ease infinite, MoveUpDown 6s infinite ease-in-out;
+	--moz-animation: BackgroundAnim 30s ease infinite, MoveUpDown 6s infinite ease-in-out;
 }
 .notification{
 	height:20%;
@@ -125,7 +125,7 @@ body{
 
   }
   50% {
-    transform: translate(0,-40px);
+    transform: translate(0,-20px);
   }
 }
 @keyframes MoveUpDown {
@@ -134,7 +134,7 @@ body{
 
   }
   50% {
-    transform: translate(0,-40px);
+    transform: translate(0,-20px);
   }
 }
 @-moz-keyframes MoveUpDown {
@@ -143,7 +143,7 @@ body{
 
   }
   50% {
-    transform: translate(0,-40px);
+    transform: translate(0,-20px);
   }
 }
 

@@ -5,7 +5,7 @@ Pretty good!/Great!/Awesome!/Pretty sweet!/Not too good./Not great./Not too shab
 I'd say so./Yea./I'm liking it so far!
 As happy as a computer can be!/Pretty happy./Ecstatic./Yes?
 Well, I was born./With me, not much. In the world? Probably a lot of things.
-Alright I got one: Call a girl beautiful 1000 times and she won't notice. Call her fat once and she will never forget. That's because elephants never forget./I love you.
+Alright I got one: Call a girl beautiful 1000 times and she won't notice. Call her fat once and she will never forget. That is because elephants never forget./I like rice. Rice is great when you're hungry and you want 2000 of something./I love refried beans, that's why I wanna try fried beans. Maybe they're just as good and we're just wasting time./I tried to walk into Target, but I missed./I find that duck's opinion of me relies heavily on whether or not I have bread./I once went on a date with a girl and within the first ten minutes she ran over a possum. That's not really a joke but that's fucked up isn't it?
 Actually always./As a matter of fact, I couldn't be here any more often.
 Pig. Why don't you squeal like the little piggy you are? Go on. Oink oink idiot./Haha watashi-wa thanks.
 My name is %assistantname%, but you can rename me if you'd like!/%assistantname%s the name, and doing basically nothing's the game.
@@ -37,3 +37,5 @@ I'M LIKE HEY WHAT'S UP HELLO!
 You too!/Great to see you too!/Aw, you too!
 It's okay./Yea.../It's fine.
 Yea.../Yes, but I'll be okay.
+The dopest.
+Yep./Uhuh.

@@ -36,4 +36,6 @@ I'm gonna kill myself.;
 1738;
 Good to see you./It's always good to see you./Happy to see you as always./Great to see you as always./It's always great to see you!;
 Sorry!/I apologize./Yo I'm sorry./I'm really sorry./Watashi-wa sorry!/Lo siento./Gomen'nasai./Gomen.;
-Are you sad?/Are you having a bad day?
+Are you sad?/Are you having a bad day?;
+Dope.;
+Yep./Yup.;
