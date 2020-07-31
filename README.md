@@ -1,3 +1,5 @@
+Check out the github here: https://github.com/strnadchristopher/arizona
+
 Arizona is a fully customizable personal assistant with weather and Spotify integration*. It'll help you google stuff. It's the best.
 
 Usage:
