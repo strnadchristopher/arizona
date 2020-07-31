@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, Tray, screen, net } = require('electron')
+const { app, BrowserWindow, Menu, Tray, screen, net, nativeImage } = require('electron')
 const electron = require('electron')
 const globalShortcut = electron.globalShortcut
 const fs = require("fs");
@@ -24,12 +24,24 @@ fs.readFile('q&a/responses.txt', function (err, data) {
   //console.log("Asynchronous read: " + data.toString());
 });
 
+
+var username, assistantName, backgroundURL;
+
+//READ Config
+loadConfig();
+function loadConfig(){
+  var initConfig = readConfig();
+  username = initConfig["username"];
+  assistantName = initConfig["assistantName"]
+  backgroundURL = initConfig["customBackgroundURL"]
+}
+
 var loaded = false;
 
 
 var path = require('path')
 //var url = require('url')
-var iconpath = path.join(__dirname, 'extraResources', 'icon.png') // path of y
+var iconpath = path.join(__dirname, 'extraResources', 'test.ico') // path of y
 var serviceScript = path.join(__dirname, 'extraResources','service.js');
 // Synchronous read
 //var data = fs.readFileSync('input.txt');
@@ -59,27 +71,6 @@ function createWindow () {
       nodeIntegration: true
     }
   })
-
-
-
-    var appIcon = new Tray(iconpath)
-    //appIcon.setPressedImage
-    var contextMenu = Menu.buildFromTemplate([
-        {
-            label: 'Show App', click: function () {
-                win.show()
-            }
-        },
-        {
-            label: 'Quit', click: function () {
-                app.isQuiting = true
-                app.quit()
-            }
-        }
-    ])
-    appIcon.setToolTip('Arizona')
-    appIcon.setContextMenu(contextMenu);
-
   win.on('minimize',function(event){
       event.preventDefault();
       win.hide();
@@ -259,69 +250,7 @@ if(onMac){
   var t=setInterval(checkSpotifyArt,spotifyUpdateInterval * 1000);
 }
 
-/*function authorizeSpotify(){
-/*
-  const request = net.request({
-    method: 'GET',
-    protocol: 'https:',
-    hostname: 'spotify.com',
-    port: 443,
-    path: "/authorize?client_id=eb0929c190354d7ea0b7e8a065ad68ed&response_type=code&redirect_uri=https://localhost/callback&scope=user-read-private%20user-read-email&state=34fFs29kd09'"
-  });
 
-  request.on('response', (response) => {
-  console.log(`STATUS: ${response.statusCode}`);
-  response.on('error', (error) => {
-    console.log(`ERROR: ${JSON.stringify(error)}`)
-  })
-})
-
-
-  request.on('login', (authInfo, callback) => {
-    console.log("Logging in");
-    callback('chris.strnad', 'Dixiegreenwood1!')
-
-})
-
-
-  var authWindow = new BrowserWindow({
-      width: 800,
-      height: 600,
-      show: false,
-      'node-integration': false,
-      'web-security': false
-  });
-  // This is just an example url - follow the guide for whatever service you are using
-  var authUrl = 'https://accounts.spotify.com/authorize?client_id=eb0929c190354d7ea0b7e8a065ad68ed&response_type=code&redirect_uri=http://localhost:8888&scope=user-read-private%20user-read-email&state=34fFs29kd09'
-
-  authWindow.loadURL(authUrl);
-  authWindow.show();
-  var keyWindow = new BrowserWindow({
-      width: 800,
-      height: 600,
-      show: false,
-      'node-integration': false,
-      'web-security': false
-  });
-  keyWindow.loadURL("http://localhost:8888")
-  keyWindow.show()
-  // 'will-navigate' is an event emitted when the window.location changes
-  // newUrl should contain the tokens you need
-  authWindow.webContents.on('will-navigate', function (event, newUrl) {
-      console.log(newUrl);
-
-      // More complex code to handle tokens goes here
-  });
-
-  authWindow.on('closed', function() {
-      authWindow = null;
-  });
-
-}
-*/
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
@@ -338,23 +267,31 @@ app.on('activate', () => {
   }
 })
 
-
-
-
 var currentMessage;
-function readAnswers(message){
+function readAnswers(message){ // Handle messages from service
   if(message.startsWith("!")){
     currentMessage = message.substring(1,message.length);
     //speak(currentMessage);
+    currentMessage = currentMessage.replace("%username%", username);
     win.webContents.send('statusUpdate', currentMessage);
   }else if(message.startsWith("*")){
     currentMessage = message.substring(1,message.length);
     win.webContents.send('notification', "Lyrics found");
     win.webContents.send('lyrics', currentMessage);
+  }else if(message == "options"){
+    var configSave = readConfig();
+    win.webContents.send('options', configSave);
   }{
     console.log(message);
-
   }
+}
+
+function readConfig(){
+    let rawData = fs.readFileSync('config.json');
+    console.log(rawData);
+    let parsedData = JSON.parse(rawData);
+    console.log(parsedData);
+    return parsedData;
 }
 
 const { Worker, isMainThread } = require("worker_threads");
@@ -381,8 +318,6 @@ async function run() {
   const result = runService({currentInput,inputs,responses});
   //console.log({ isMainThread });
 }
-
-//run().catch(err => console.error(err));
 
 
 const { ipcMain } = require('electron')
