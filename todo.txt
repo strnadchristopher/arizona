@@ -1,3 +1,1 @@
-q & a - file system check
-voice to text
-media controls
+Voice

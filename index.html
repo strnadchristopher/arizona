@@ -4,14 +4,22 @@
       <meta charset="UTF-8">
       <title>Hello World!</title>
       <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
-	   <link rel="stylesheet" type="text/css" href="style.css">
+	   <!--<link rel="stylesheet" type="text/css" href="themes/default/style.css">-->
+     <script>
+        const fs = require('fs')
+       let rawData = fs.readFileSync('config.json');
+       console.log(rawData);
+       let parsedData = JSON.parse(rawData);
+       console.log(parsedData);
+       var link = "themes/" + parsedData["theme"] + "/style.css";
+       document.write('<link rel="stylesheet" type="text/css" href="' + link + '">');
+     </script>
      <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.0/animate.css">
   </head>
   <body id='body'>
-    <div class="section"><input class="inputField" id="inputField" type='text' onclick="this.select()"></div>
-    <div class="section colorBackground" id="sectionA"><h1 id="output" class="">Howdy!</h1><br/></div>
-    <div style="visibility:hidden;"class="section notification colorBackground" id="notification"><h2 id="notifText"></h2></div>
-  <script src="https://sdk.scdn.co/spotify-player.js"></script>
+    <div id="textBox" class="section"><input class="inputField" id="inputField" type='text' onclick="this.select()"></div>
+    <div id="mainWindow" class="section colorBackground"><h1 id="output" class="">Howdy!</h1><br/></div>
+    <div id="notification" style="visibility:hidden;" class="section notification colorBackground"><h2 id="notifText"></h2></div>
   <link rel="stylesheet" src="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.0/animate.css">
   <script src="renderer.js"></script>
   </body>

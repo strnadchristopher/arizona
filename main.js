@@ -4,6 +4,7 @@ const globalShortcut = electron.globalShortcut
 const fs = require("fs");
 var execa = require("execa");
 var currentInput;
+var win;
 // Asynchronous read inputs and outputs
 var inputs;
 fs.readFile('q&a/inputs.txt', function (err, data) {
@@ -21,23 +22,33 @@ fs.readFile('q&a/responses.txt', function (err, data) {
   responses = data.toString().split("\n");
   //console.log("Asynchronous read: " + data.toString());
 });
-var username, assistantName, backgroundURL;
+var username, assistantName, assistantShortcut, theme, cusW, cusH;
 //READ Config
-loadConfig();
 function loadConfig(){
   var initConfig = readConfig();
   username = initConfig["username"];
   assistantName = initConfig["assistantName"]
-  backgroundURL = initConfig["customBackgroundURL"]
+  assistantShortcut = initConfig["assistantShortcut"]
+  cusW = initConfig["windowWidth"];
+  cusH = initConfig["windowHeight"];
+  updateWindowPosition(parseInt(cusW),parseInt(cusH))
+}
+function updateWindowPosition(w,h){
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize
+  const xOffset = 15;
+  const winX = width - w - xOffset;
+  const winY = height - h;
+  win.setSize(w,h);
+  win.setPosition(winX,winY);
 }
 var loaded = false;
 var path = require('path')
 var iconpath = path.join(__dirname, 'extraResources', 'icon.png') // path of y
 var serviceScript = path.join(__dirname, 'extraResources','service.js');
-var win;
+
 function createWindow () {
-  var windowWidth = 400;
-  var windowHeight = 500;
+  var windowWidth = parseInt(cusW);
+  var windowHeight = parseInt(cusH);
   const { width, height } = screen.getPrimaryDisplay().workAreaSize
   const xOffset = 15;
   const winX = width - windowWidth - xOffset;
@@ -64,14 +75,17 @@ function createWindow () {
 
   win.on('blur', function(event){
     //event.preventDefault();
-    win.hide()
+    win.webContents.send('slideOut')
+    setTimeout(function(){
+      win.hide();
+    },500)
+    //win.hide()
   })
 
   win.on('show', function(event){
     //win.hid()
     //createWindow()
   })
-
   win.on('close', function (event) {
       if(!app.isQuiting){
           //event.preventDefault();
@@ -80,9 +94,13 @@ function createWindow () {
 
       return false;
   });
+  loadConfig();
 	//Add refresh shortcut
-  globalShortcut.register('ctrl+shift+a', function() {console.log('Bringing back app')
-  win.show();})
+  globalShortcut.register(assistantShortcut, function() {
+    console.log('Bringing back app')
+    win.show();
+    win.webContents.send('focusInput', 'Swag');
+  })
 	globalShortcut.register('f5', function() {console.log('App Refreshed')
   win.reload()})
 	globalShortcut.register('escape', function() {console.log('Hiding app')})
@@ -90,17 +108,35 @@ function createWindow () {
   win.webContents.openDevTools()})
   globalShortcut.register('f3', function() {getArtwork();})
   win.loadFile('index.html')
+
   // Open the DevTools.
   loaded = true;
 }
 app.whenReady().then(createWindow)
-function showGoogle(){
-  windowWidth = 1000;
-  windowHeight = 500;
-  win.setSize(windowWidth,windowHeight)
-  win.setPosition(width - windowWidth,height - windowHeight);
-  //
-  win.loadURL("https://google.com")
+var currentMessage;
+function readAnswers(message){ // Handle messages from service
+  if(message.startsWith("!")){
+    currentMessage = message.substring(1,message.length);
+    //speak(currentMessage);
+    currentMessage = currentMessage.replace("%username%", username);
+    win.webContents.send('statusUpdate', currentMessage);
+  }else if(message.startsWith("*")){
+    currentMessage = message.substring(1,message.length);
+    win.webContents.send('notification', "Lyrics found");
+    win.webContents.send('lyrics', currentMessage);
+  }else if(message == "options"){
+    var configSave = readConfig();
+    win.webContents.send('options', configSave);
+  }else if(message.startsWith("google")){
+    var search = message.split(":")[1];
+    showGoogle(search);
+  }else{
+    console.log(message);
+  }
+}
+function showGoogle(query){
+  var link = "https://www.google.com/search?q=" +query.replace("google","").replace(" ","+");
+  require("electron").shell.openExternal(link);
 }
 
 // Imports the Google Cloud client library
@@ -130,8 +166,6 @@ async function speak(sString) {
   await writeFile('output.mp3', response.audioContent, 'binary');
   console.log('Audio content written to file: output.mp3');
   var player = require('play-sound')(opts = {})
-
-// $ mplayer foo.mp3
   player.play('output.mp3', function(err){
     if (err) throw err
   })
@@ -233,27 +267,6 @@ app.on('activate', () => {
     //createWindow()
   }
 })
-
-var currentMessage;
-function readAnswers(message){ // Handle messages from service
-  if(message.startsWith("!")){
-    currentMessage = message.substring(1,message.length);
-    //speak(currentMessage);
-    currentMessage = currentMessage.replace("%username%", username);
-    win.webContents.send('statusUpdate', currentMessage);
-  }else if(message.startsWith("*")){
-    currentMessage = message.substring(1,message.length);
-    win.webContents.send('notification', "Lyrics found");
-    win.webContents.send('lyrics', currentMessage);
-  }else if(message == "options"){
-    var configSave = readConfig();
-    win.webContents.send('options', configSave);
-  }else if(message.startsWith("google")){
-
-  }else
-    console.log(message);
-  }
-}
 
 function readConfig(){
     let rawData = fs.readFileSync('config.json');

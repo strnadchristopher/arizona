@@ -1,5 +1,8 @@
 {
+    "theme" : "default",
     "username": "Chris",
     "assistantName": "Arizona",
-    "customBackgroundURL": "themes/default/bg.jpg"
+    "assistantShortcut": "alt+shift+q",
+    "windowWidth": "400",
+    "windowHeight": "500"
 }

@@ -4,6 +4,10 @@ var execa = require("execa")
 const input = workerData['currentInput'];
 const inputs = workerData['inputs'];
 const responses = workerData['responses'];
+var onMac = false;
+if (process.platform == 'darwin') {
+  onMac = true;
+}
 if(input != null){
 	getAnswer();
 }
@@ -36,15 +40,21 @@ function getAnswer(){
   }else if(input == "skip"||
            input == "next song" ||
            input == "next"){
+						 if(onMac){
       nextTrack();
       parentPort.postMessage("!Playing next song.");
+		}
   }else if(input == "lyrics"){
+		if(onMac){
       parentPort.postMessage("!Finding lyrics...")
       getLyrics();
+		}else{
+			parentPort.postMessage("!Sorry, that only works on Mac right now.")
+		}
   }else if(input == "options" ||
           input == "config"){
       parentPort.postMessage("options")
-  }else if(){
+  }else if(input.startsWith("google")){
 			parentPort.postMessage("google:" + input)
 	}
 	else{
@@ -76,19 +86,11 @@ function getAnswer(){
 
 async function getLyrics(trackData){
   const lyrics = require('node-lyrics-api');
-
   const [artist, title] = await Promise.all([getArtist(), getTrackTitle()]);
-
-
   let ourSong = await lyrics(title + " " + artist);
-
   if(ourSong.status.failed) return console.log('Bad Response');
-
   console.log(ourSong.content[0].lyrics);
-
   parentPort.postMessage("*" + ourSong.content[0].lyrics);
-  //lyrics('our song').then(l => console.log(l.content[0].lyrics));
-  //win.webContents.send('lyrics', ourSong.content[0].lyrics);
 }
 async function getArtist(){
   const {stdout} = await execa('osascript', ['-e',
