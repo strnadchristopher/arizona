@@ -4,7 +4,6 @@ const globalShortcut = electron.globalShortcut
 const fs = require("fs");
 var execa = require("execa");
 var currentInput;
-
 // Asynchronous read inputs and outputs
 var inputs;
 fs.readFile('q&a/inputs.txt', function (err, data) {
@@ -14,7 +13,6 @@ fs.readFile('q&a/inputs.txt', function (err, data) {
   inputs = data.toString().replace(/(\r\n|\n|\r)/gm,"").split(";");
   //console.log("Asynchronous read: " + data.toString());
 });
-
 var responses;
 fs.readFile('q&a/responses.txt', function (err, data) {
   if (err) {
@@ -23,10 +21,7 @@ fs.readFile('q&a/responses.txt', function (err, data) {
   responses = data.toString().split("\n");
   //console.log("Asynchronous read: " + data.toString());
 });
-
-
 var username, assistantName, backgroundURL;
-
 //READ Config
 loadConfig();
 function loadConfig(){
@@ -35,23 +30,14 @@ function loadConfig(){
   assistantName = initConfig["assistantName"]
   backgroundURL = initConfig["customBackgroundURL"]
 }
-
 var loaded = false;
-
-
 var path = require('path')
-//var url = require('url')
-var iconpath = path.join(__dirname, 'extraResources', 'test.ico') // path of y
+var iconpath = path.join(__dirname, 'extraResources', 'icon.png') // path of y
 var serviceScript = path.join(__dirname, 'extraResources','service.js');
-// Synchronous read
-//var data = fs.readFileSync('input.txt');
-//console.log("Synchronous read: " + data.toString());
-//console.log("Program Ended");
 var win;
-
 function createWindow () {
-  const windowWidth = 400;
-  const windowHeight = 500;
+  var windowWidth = 400;
+  var windowHeight = 500;
   const { width, height } = screen.getPrimaryDisplay().workAreaSize
   const xOffset = 15;
   const winX = width - windowWidth - xOffset;
@@ -94,46 +80,27 @@ function createWindow () {
 
       return false;
   });
-
-
 	//Add refresh shortcut
-  globalShortcut.register('ctrl+shift+a', function() {
-		console.log('Bringing back app')
-		win.show();
-	})
-	globalShortcut.register('f5', function() {
-		console.log('App Refreshed')
-    //win.hide()
-		win.reload()
-	})
-	globalShortcut.register('escape', function() {
-		console.log('Hiding app')
-		//app.quit();
-    //win.close();
-	})
-	globalShortcut.register('f7', function() {
-		console.log('Showing console')
-		win.webContents.openDevTools()
-	})
-  globalShortcut.register('f2', function() {
-		//nextTrack();
-	})
-  globalShortcut.register('f3', function() {
-		getArtwork();
-	})
-  globalShortcut.register("ctrl+shift+s", function(){
-    //listen().catch(console.error);
-  })
-
-
-
-	//globalShortcut.register('enter', function(){
-		//sendMessage();
-	//})
-  // and load the index.html of the app.
+  globalShortcut.register('ctrl+shift+a', function() {console.log('Bringing back app')
+  win.show();})
+	globalShortcut.register('f5', function() {console.log('App Refreshed')
+  win.reload()})
+	globalShortcut.register('escape', function() {console.log('Hiding app')})
+	globalShortcut.register('f7', function() {console.log('Showing console')
+  win.webContents.openDevTools()})
+  globalShortcut.register('f3', function() {getArtwork();})
   win.loadFile('index.html')
   // Open the DevTools.
   loaded = true;
+}
+app.whenReady().then(createWindow)
+function showGoogle(){
+  windowWidth = 1000;
+  windowHeight = 500;
+  win.setSize(windowWidth,windowHeight)
+  win.setPosition(width - windowWidth,height - windowHeight);
+  //
+  win.loadURL("https://google.com")
 }
 
 // Imports the Google Cloud client library
@@ -241,7 +208,7 @@ async function getTrackTitle(){
   return stdout;
 }
 
-app.whenReady().then(createWindow)
+
 var onMac = false;
 if (process.platform == 'darwin') {
   onMac = true;
@@ -281,7 +248,9 @@ function readAnswers(message){ // Handle messages from service
   }else if(message == "options"){
     var configSave = readConfig();
     win.webContents.send('options', configSave);
-  }{
+  }else if(message.startsWith("google")){
+
+  }else
     console.log(message);
   }
 }

@@ -90,14 +90,14 @@ body{
 	padding:5px;
 
 }
-.colorBackgroundd{
+.colorBackground{
 	background: linear-gradient(270deg, rgba(0,255,189,.5), rgba(133,14,13,.3), rgba(52, 47, 255,.6), rgba(251, 204, 86,.8));
   background-size: 800% 800%;
 	--webkit-animation: AnimationName 30s ease infinite, MoveUpDown 4s infinite ease-in-out;
 	animation: AnimationName 30s ease infinite, MoveUpDown 4s infinite ease-in-out;
 	--moz-animation: AnimationName 30s ease infinite, MoveUpDown 4s infinite ease-in-out;
 }
-.colorBackground{
+//.colorBackground{
 	background-color:#2F3136;
 
 	//font-size: 10px;
@@ -110,11 +110,11 @@ body{
 .notification{
 	height:20%;
 	margin-top:15%;
-	overflow-y:scroll;
 }
 .showingLyrics{
 	justify-content: flex-start;
 	align-items: flex-start;
+	overflow-y:scroll;
 }
 
 .albumBackground{

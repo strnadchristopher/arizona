@@ -17,14 +17,12 @@ function getAnswer(){
      input == "what's the weather"||
      input == "whats the forecast"){
     var weather = require('openweather-apis');
-
     weather.setLang('en');
     // English - en, Russian - ru, Italian - it, Spanish - es (or sp),
     // Ukrainian - uk (or ua), German - de, Portuguese - pt,Romanian - ro,
     // Polish - pl, Finnish - fi, Dutch - nl, French - fr, Bulgarian - bg,
     // Swedish - sv (or se), Chinese Tra - zh_tw, Chinese Sim - zh (or zh_cn),
     // Turkish - tr, Croatian - hr, Catalan - ca
-
     weather.setAPPID("b6f1f93b7b842bdf437126921aad0521");
     weather.setUnits('imperial');
     // set city by name
@@ -46,8 +44,10 @@ function getAnswer(){
   }else if(input == "options" ||
           input == "config"){
       parentPort.postMessage("options")
-      //getLyrics();
-  }else{
+  }else if(){
+			parentPort.postMessage("google:" + input)
+	}
+	else{
   	for(var i in inputs){
   		var splitString = inputs[i].split("/");
   		for(var x in splitString){ //Each individual input string

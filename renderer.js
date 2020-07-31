@@ -15,7 +15,6 @@ function handleAnimationEnd() {
 
   resolve('Animation ended');
 }
-
 node.addEventListener('animationend', handleAnimationEnd);
 });
 const output = document.getElementById("output");
@@ -26,7 +25,6 @@ var inputField = document.getElementById("inputField");
 document.getElementById("inputField").focus();
 const { ipcRenderer } = require('electron')
 //console.log(ipcRenderer.sendSync('synchronous-message', 'ping')) // prints "pong"
-
 ipcRenderer.on('asynchronous-reply', (event, arg) => {
   console.log(arg) // prints "pong"
 
@@ -34,7 +32,6 @@ ipcRenderer.on('asynchronous-reply', (event, arg) => {
   animateCSS("#output", 'bounce');
   //document.write(arg);
 })
-
 ipcRenderer.on('statusUpdate', function(event, data){
   console.log(data);
   output.innerHTML = data;
@@ -104,9 +101,8 @@ if(e.keyCode == 13){
 animateCSS("#output", 'bounce');
 animateCSS("#body", 'slideInUp');
 
-
 //Make Tray
-var ICON_PATH = path.join(__dirname, 'extraResources', 'test.ico') // path of y
+var ICON_PATH = path.join(__dirname, 'extraResources', 'icon.png') // path of y
 var path = require('path');
 var remote = require('remote');
 var Tray = remote.require('tray');
