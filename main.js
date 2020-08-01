@@ -128,12 +128,7 @@ function skipTrack(){
   fs.readFile("spotifyAuth.txt", "utf8", function(err,data){
       accessCode = data;
       console.log("a code: " + accessCode)
-      var credentials = {
-      clientId: 'eb0929c190354d7ea0b7e8a065ad68ed',
-      clientSecret: '9d854a36798a4ce89c94b6ae9aeb7f90'
-      };
       var spotifyApi = new SpotifyWebApi(credentials);
-      spotifyApi.setAccessToken('BQBM33YmxgUVo8Fk7t-QGGRlKdZ0HYVfUhA0tS2-PTsoLjwbMd1umr3B9kDH3GKtzZkv7F3sCEJnwZVKrbtEayXicP28Txtib54fo0CtD2qxi0lSEpe7EW1cVdEw2Dnh5Snx8EZzpgICmdJs1GNy8pL06dFsjYeeBv4VNQ');
       // Retrieve an access token.
 
       // Do search using the access token
