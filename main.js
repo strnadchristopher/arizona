@@ -22,7 +22,7 @@ fs.readFile('q&a/responses.txt', function (err, data) {
   responses = data.toString().split("\n");
   //console.log("Asynchronous read: " + data.toString());
 });
-var username, assistantName, assistantShortcut, theme, cusW, cusH;
+var username, assistantName, assistantShortcut, theme, cusW, cusH, secondScreen;
 //READ Config
 function loadConfig(){
   var initConfig = readConfig();
@@ -31,14 +31,24 @@ function loadConfig(){
   assistantShortcut = initConfig["assistantShortcut"]
   cusW = initConfig["windowWidth"];
   cusH = initConfig["windowHeight"];
-  updateWindowPosition(parseInt(cusW),parseInt(cusH))
+  secondScreen = (initConfig["secondScreen"] === 'true')
+  updateWindowPosition(parseInt(cusW),parseInt(cusH));
 }
+
 function updateWindowPosition(w,h){
-  const { width, height } = screen.getPrimaryDisplay().workAreaSize
-  const xOffset = 15;
-  const winX = width - w - xOffset;
-  const winY = height - h;
+  let displays = screen.getAllDisplays()
+  let externalDisplay = displays.find((display) => {
+    return display.bounds.x !== 0 || display.bounds.y !== 0
+  })
   win.setSize(w,h);
+  var { width, height } = screen.getPrimaryDisplay().workAreaSize
+  const xOffset = 15;
+  var winX = width - w - xOffset;
+  var winY = height - h;
+  if(secondScreen && externalDisplay){
+    winX = (width * 2) - w - xOffset;
+    console.log(winX,winY)
+  }
   win.setPosition(winX,winY);
 }
 var loaded = false;
@@ -72,7 +82,6 @@ function createWindow () {
       event.preventDefault();
       win.hide();
   });
-
   win.on('blur', function(event){
     //event.preventDefault();
     win.webContents.send('slideOut')
@@ -81,7 +90,6 @@ function createWindow () {
     },500)
     //win.hide()
   })
-
   win.on('show', function(event){
     //win.hid()
     //createWindow()
@@ -91,7 +99,6 @@ function createWindow () {
           //event.preventDefault();
           win.hide();
       }
-
       return false;
   });
   loadConfig();
@@ -108,7 +115,6 @@ function createWindow () {
   win.webContents.openDevTools()})
   globalShortcut.register('f3', function() {getArtwork();})
   win.loadFile('index.html')
-
   // Open the DevTools.
   loaded = true;
 }
@@ -119,6 +125,7 @@ function readAnswers(message){ // Handle messages from service
     currentMessage = message.substring(1,message.length);
     //speak(currentMessage);
     currentMessage = currentMessage.replace("%username%", username);
+    console.log(currentMessage);
     win.webContents.send('statusUpdate', currentMessage);
   }else if(message.startsWith("*")){
     currentMessage = message.substring(1,message.length);
@@ -264,8 +271,9 @@ app.on('activate', () => {
   win.show()
   win.webContents.focus();
   if (BrowserWindow.getAllWindows().length === 0) {
-    //createWindow()
+    createWindow()
   }
+  //win.webContents.send('slideIn', "Do it");
 })
 
 function readConfig(){

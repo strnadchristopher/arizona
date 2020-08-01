@@ -9,7 +9,7 @@ if (process.platform == 'darwin') {
   onMac = true;
 }
 if(input != null){
-	getAnswer();
+  getAnswer();
 }
 function getAnswer(){
 	var lowestString;
@@ -54,36 +54,64 @@ function getAnswer(){
   }else if(input == "options" ||
           input == "config"){
       parentPort.postMessage("options")
-  }else if(input.startsWith("google")){
+  }else if(input.startsWith("google") ||
+           input.startsWith("what is")){
 			parentPort.postMessage("google:" + input)
-	}
-	else{
-  	for(var i in inputs){
-  		var splitString = inputs[i].split("/");
-  		for(var x in splitString){ //Each individual input string
-  			var distance = stringSimilarity.compareTwoStrings(input, splitString[x]); //Check distance //SOMETHING GOES WRONG HERE
-
-  			if(distance > greatestDistance){ // If its a match, or a better match than before
-  				lowestString = splitString[x];
-  				currentPick = i;
-  				greatestDistance = distance;
-  			}
-
-  			parentPort.postMessage(input + " and " + splitString[x] + ", Distance: " + distance);
-  			if(greatestDistance < 0){
-  				//event.reply('asynchronous-reply', responses[currentPick]);
-  			}
-  		}
-  	}
-    var responsePick = responses[currentPick];
-  	if(greatestDistance == 0){
-  		responsePick = "Sorry I think I just had a stroke, say that again?/Uh, sorry I like totally just spaced out./I literally have no idea what you just said.";
-  	}
-  	parentPort.postMessage("I think you said " + lowestString + ", Going with " + responsePick);
-  	parentPort.postMessage("!" + responsePick.split("/")[Math.floor(Math.random() * responsePick.split("/").length)]);
+  }else if(input.endsWith(".py")){
+    var python = require('child_process').spawn('python', ['scripts/'+input]);
+    parentPort.postMessage("Running " + input)
+    python.stdout.on('data',function(data){
+        console.log("data: ",data.toString('utf8'));
+    });
+  }else{
+    	for(var i in inputs){
+    		var splitString = inputs[i].split("/");
+    		for(var x in splitString){ //Each individual input string
+    			var distance = stringSimilarity.compareTwoStrings(input, splitString[x]); //Check distance //SOMETHING GOES WRONG HERE
+    			if(distance > greatestDistance){ // If its a match, or a better match than before
+    				lowestString = splitString[x];
+    				currentPick = i;
+    				greatestDistance = distance;
+    			}
+    			parentPort.postMessage(input + " and " + splitString[x] + ", Distance: " + distance);
+    		}
+    	}
+      var responsePick = responses[currentPick];
+      var minimumConfidence = .5;
+    	if(greatestDistance < minimumConfidence){ //Minimum confidence
+        parentPort.postMessage("google:" + input)
+    	}else{
+  	    parentPort.postMessage("I think you said " + lowestString + ", Going with " + responsePick + " Distance: " + greatestDistance);
+  	    parentPort.postMessage("!" + responsePick.split("/")[Math.floor(Math.random() * responsePick.split("/").length)]);
+      }
   }
 }
-
+var scriptFiles = ["none"];
+function readScripts(){
+  const path = require('path')
+  const fs  = require('fs')
+  const directoryPath = path.join(__dirname, 'scripts');
+  fs.readdir("scripts", function (err, files) {
+  //handling error
+  if (err) {
+      parentPort.postMessage("!" + err)
+      //return console.log('Unable to scan directory: ' + err);
+  }
+  //listing all files using forEach
+  files.forEach(function (file) {
+        scriptFiles.push(file);
+    });
+  });
+  getAnswer();
+}
+function matchesScript(iString){
+  scriptFiles.forEach(function(file){
+    if (iString + ".py" == file){
+      //parentPort.postMessage("!" + file);
+        return file;
+      }
+  });
+}
 async function getLyrics(trackData){
   const lyrics = require('node-lyrics-api');
   const [artist, title] = await Promise.all([getArtist(), getTrackTitle()]);

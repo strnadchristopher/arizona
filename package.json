@@ -32,7 +32,9 @@
   "keywords": [
     "siri",
     "virtual assistant",
-    "electron"
+    "front-end",
+    "css",
+    "robotics"
   ],
   "build": {
     "extraResources": [
@@ -42,11 +44,11 @@
       }
     ]
   },
-  "bundleDependencies": true,
-  "bundledDependencies": {
+  "bundleDependencies": {
     "animate.css": "^4.1.0",
     "aseprite": "^0.2.1",
     "electron": "1.4.15",
+    "electron-packager": "^15.0.0",
     "execa": "^4.0.3",
     "openweather-apis": "^4.3.1",
     "spotify-web-api-js": "^1.4.0",
@@ -61,7 +63,7 @@
     "start": "electron .",
     "bundle-dependencies": "bundle-dependencies"
   },
-  "version": "0.0.7",
+  "version": "0.0.8",
   "dependencies": {
     "@google-cloud/speech": "^4.1.1",
     "@google-cloud/text-to-speech": "^3.1.0",

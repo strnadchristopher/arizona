@@ -2,7 +2,8 @@
     "theme" : "default",
     "username": "Chris",
     "assistantName": "Arizona",
-    "assistantShortcut": "alt+shift+q",
+    "assistantShortcut": "ctrl+q",
     "windowWidth": "400",
-    "windowHeight": "500"
+    "windowHeight": "500",
+    "secondScreen": "false"
 }

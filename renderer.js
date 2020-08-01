@@ -84,6 +84,7 @@ ipcRenderer.on('options', function(event, data){
 })
 ipcRenderer.on('focusInput', function(event, data){
   document.getElementById("inputField").focus();
+  animateCSS("#body","slideInUp")
 })
 ipcRenderer.on('slideOut', function(event, data){
   animateCSS("#body","slideOutDown")
