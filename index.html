@@ -14,15 +14,22 @@
        console.log(parsedData);
        var link = "themes/" + parsedData["theme"] + "/style.css";
        document.write('<link rel="stylesheet" type="text/css" href="' + link + '">');
-       if(parsedData["backgroundVideo"] == "true"){
-         bgVid = true;
-       }
+       try {
+        if (fs.existsSync("themes/" + parsedData["theme"] + "/bg.mp4")) {
+          bgVid = true;
+        }
+      } catch(err) {
+        console.error(err)
+      }
+
      </script>
      <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.0/animate.css">
   </head>
   <body id='body'>
     <div id="textBox" class="section"><input class="inputField" id="inputField" type='text' onclick="this.select()"></div>
-    <div id="mainWindow" class="section colorBackground"><script>if(bgVid){document.write('<video loop autoplay>')}</script><source src="themes/dark/test.mp4" type="video/mp4"></video><h1 id="output" class="">Howdy!</h1><br/></div>
+    <div id="mainWindow" class="section colorBackground"><script>
+    console.log(bgVid);
+    if(bgVid){document.write('<video loop autoplay><source src="themes/' + parsedData["theme"] + '/bg.mp4" type="video/mp4"></video>')}</script></video><h1 id="output" class="">Howdy!</h1><br/></div>
     <div id="notification" style="visibility:hidden;" class="section notification colorBackground"><h2 id="notifText"></h2></div>
   <link rel="stylesheet" src="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.0/animate.css">
   <script src="renderer.js"></script>
