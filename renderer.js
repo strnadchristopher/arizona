@@ -72,7 +72,6 @@ ipcRenderer.on('notification', function(event, data){
       notif.style.visibility = "hidden";
       notifShowing = false;
     }, 5000)
-  //output.innerHTML = "Now playing: " + data.split(";")[1] + " by " + data.split(";")[0];
 })
 ipcRenderer.on('options', function(event, data){
   console.log(data);
@@ -104,32 +103,3 @@ if(e.keyCode == 13){
 
 animateCSS("#output", 'bounce');
 animateCSS("#body", 'slideInUp');
-/*
-//Make Tray
-var ICON_PATH = path.join(__dirname, 'extraResources', 'icon.png') // path of y
-var path = require('path');
-var remote = require('remote');
-var Tray = remote.require('tray');
-var Menu = remote.require('menu');
-var NativeImage = remote.require('native-image');
-
-var tray = null;
-
-console.log('Setting tray...');
-console.log('Device pixel ratio: ' + window.devicePixelRatio);
-var menuTemplate = [{label: 'Hello world!'}]
-
-var useDataUrl = location.search === '?useDataUrl';
-if (useDataUrl) {
-  tray = new Tray(
-    NativeImage.createFromDataUrl(
-      NativeImage.createFromPath(ICON_PATH).toDataUrl()
-    )
-  );
-} else {
-  tray = new Tray(
-    NativeImage.createFromPath(ICON_PATH).toPNG()
-  );
-}
-tray.setContextMenu(Menu.buildFromTemplate(menuTemplate));
-*/

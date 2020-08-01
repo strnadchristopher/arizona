@@ -59,7 +59,7 @@ function getAnswer(){
 			parentPort.postMessage("google:" + input)
   }else if(input.endsWith(".py")){
     var python = require('child_process').spawn('python', ['scripts/'+input]);
-    parentPort.postMessage("Running " + input)
+    parentPort.postMessage("!Running " + input)
     python.stdout.on('data',function(data){
         console.log("data: ",data.toString('utf8'));
     });

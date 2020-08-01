@@ -1,9 +1,10 @@
 {
-    "theme" : "default",
+    "theme" : "dark",
     "username": "Chris",
     "assistantName": "Arizona",
     "assistantShortcut": "ctrl+q",
     "windowWidth": "400",
     "windowHeight": "500",
-    "secondScreen": "false"
+    "secondScreen": "true",
+    "backgroundVideo", "true"
 }

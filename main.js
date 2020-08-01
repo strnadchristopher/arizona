@@ -118,8 +118,11 @@ function createWindow () {
   // Open the DevTools.
   loaded = true;
 }
+
 app.whenReady().then(createWindow)
+
 var currentMessage;
+
 function readAnswers(message){ // Handle messages from service
   if(message.startsWith("!")){
     currentMessage = message.substring(1,message.length);
@@ -141,86 +144,18 @@ function readAnswers(message){ // Handle messages from service
     console.log(message);
   }
 }
+
 function showGoogle(query){
   var link = "https://www.google.com/search?q=" +query.replace("google","").replace(" ","+");
   require("electron").shell.openExternal(link);
 }
-
-// Imports the Google Cloud client library
-const textToSpeech = require('@google-cloud/text-to-speech');
-
-// Import other required libraries
-const util = require('util');
-// Creates a client
-const client = new textToSpeech.TextToSpeechClient();
-async function speak(sString) {
-  // The text to synthesize
-  const text = sString;
-
-  // Construct the request
-  const request = {
-    input: {text: text},
-    // Select the language and SSML voice gender (optional)
-    voice: {languageCode: 'en-US', ssmlGender: 'FEMALE'},
-    // select the type of audio encoding
-    audioConfig: {audioEncoding: 'MP3'},
-  };
-
-  // Performs the text-to-speech request
-  const [response] = await client.synthesizeSpeech(request);
-  // Write the binary audio content to a local file
-  const writeFile = util.promisify(fs.writeFile);
-  await writeFile('output.mp3', response.audioContent, 'binary');
-  console.log('Audio content written to file: output.mp3');
-  var player = require('play-sound')(opts = {})
-  player.play('output.mp3', function(err){
-    if (err) throw err
-  })
-}
-
-async function listen() {
-  // Imports the Google Cloud client library
-  const speech = require('@google-cloud/speech');
-
-  // Creates a client
-  const client = new speech.SpeechClient();
-
-  // The name of the audio file to transcribe
-  const fileName = 'input.wav';
-
-  // Reads a local audio file and converts it to base64
-  const file = fs.readFileSync(fileName);
-  const audioBytes = file.toString('base64');
-
-  // The audio file's encoding, sample rate in hertz, and BCP-47 language code
-  const audio = {
-    content: audioBytes,
-  };
-  const config = {
-    encoding: 'LINEAR16',
-    sampleRateHertz: 16000,
-    languageCode: 'en-US',
-  };
-  const request = {
-    audio: audio,
-    config: config,
-  };
-
-  // Detects speech in the audio file
-  const [response] = await client.recognize(request);
-  const transcription = response.results
-    .map(result => result.alternatives[0].transcript)
-    .join('\n');
-  console.log(`Transcription: ${transcription}`);
-}
-//listen().catch(console.error);
-
 var artworkURL;
 var spotifyUpdateInterval = 3; //In seconds
 
 function checkSpotifyArt(){
   getArtwork();
 }
+
 async function getArtwork(){
   const {stdout} = await execa('osascript', ['-e',
   'tell application "Spotify" to return current track\'s artwork url']);
@@ -230,7 +165,6 @@ async function getArtwork(){
     showNotification("Now Playing");
     getTrackInfo();
   }
-
 }
 
 async function getTrackInfo(){
@@ -248,8 +182,6 @@ async function getTrackTitle(){
   'tell application "Spotify" to return current track\'s name']);
   return stdout;
 }
-
-
 var onMac = false;
 if (process.platform == 'darwin') {
   onMac = true;
@@ -296,8 +228,6 @@ function runService(workerData) {
   worker.on("exit", code =>
     console.log(`Worker stopped with exit code ${code}`)
   );
-  //worker.postMessage("exit");
-  //setTimeout(() => worker.postMessage("you won't see me"), 100);
 }
 
 function showNotification(notif){
@@ -306,7 +236,6 @@ function showNotification(notif){
 
 async function run() {
   const result = runService({currentInput,inputs,responses});
-  //console.log({ isMainThread });
 }
 
 
@@ -315,7 +244,6 @@ ipcMain.on('asynchronous-query', (event, arg) => { //When an input is given
 	if(arg != ""){
 		currentInput = arg;
 		run();
-		//event.reply('asynchronous-reply', currentMessage);
 	}
 
 })

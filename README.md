@@ -2,30 +2,37 @@ Check out the github here: https://github.com/strnadchristopher/arizona
 
 Arizona is a fully customizable personal assistant with weather and Spotify integration*. It'll help you google stuff. It's the best.
 
-Usage:
+#Usage
 See Config.json to change things like your name and colors
 To Add or remove inputs for conversation, edit the 'inputs.txt' and 'responses.txt'
 Every line in 'inputs.txt' corresponds to the same line in 'responses.txt'. Separate alternate versions of inputs or responses with a '/'
 
-NEW FEATURE:
-Run Python scripts by placing them in your 'scripts' folder and just type the name of the python file to run. (Must have python installed)
+#NEW FEATURES
 
-Custom CSS:
+##Themes
 Create a folder in the themes directory with the name of your theme and add a file named "style.css" then, in config.json, set your theme to the name of the folder you created.
 You can add whatever css you want to the custom css file.
 
-Commands:
-Mac OS with Spotify only:
+##Background Video
+Place a mp4 in the directory of your theme with the name 'bg.mp4'
+
+##Python Scripts
+Run Python scripts by placing them in your 'scripts' folder and just type the name of the python file to run. (Must have python installed)
+
+
+
+#Commands
+##Mac OS with Spotify only
 'next', 'skip', 'next song' - skip track on spotify
 'lyrics' - display song lyrics from node-lyrics-api
 
-All Platforms:
+##All Platforms
 'google [query]'' - open google in your browser with your query, faster than cortana (example: "google the shaggy dog")
 Any message that doesn't look like an input from the "inputs" file will be googled. So you can type "gene wilder" and it will google Gene Wilder
 
 'weather' - display the weather
 
-Shortcuts:
+#Shortcuts
 
 Ctrl+Q - Pull up assistant
 
@@ -33,12 +40,12 @@ Escape - Hide assistant
 
 F5 - Refresh Assistant
 
-TO-DO:
+#TO-DO
 
 Voice Control and Response (considering using AWS)
 Spotify API and more music programs
 
-Known Bugs:
+#Known Bugs
 (macOS only) When window is re-opened from being hidden, a strange shadow appears behind the app that doesn't go away.
 Tray icon doesn't appear on windows.
 
