@@ -27,7 +27,7 @@ Any message that doesn't look like an input from the "inputs" file will be googl
 
 Shortcuts:
 
-Shift-Ctrl-A - Pull up assistant
+Ctrl+Q - Pull up assistant
 
 Escape - Hide assistant
 
