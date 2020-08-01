@@ -3,7 +3,7 @@ Arizona
 
 Arizona is a fully customizable personal assistant with weather and Spotify integration. It'll help you google stuff. It's the best.
 
-![Picture of Arizona](https://imgur.com/X2cx4d2)
+![Picture of Arizona](https://github.com/strnadchristopher/arizona/blob/master/preview.png?raw=true)
 
 ## Description
 
