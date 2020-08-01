@@ -3,6 +3,8 @@ Arizona
 
 Arizona is a fully customizable personal assistant with weather and Spotify integration. It'll help you google stuff. It's the best.
 
+![Picture of Arizona](https://imgur.com/X2cx4d2)
+
 ## Description
 
 Arizona is meant to be a customizable open replacement for desktop assistants like Cortana and Siri. You can use any mp4 as your assistant's avatar. It's meant to be completely customizable to your liking, and because it's all written in HTML and CSS, that's completely easy.
