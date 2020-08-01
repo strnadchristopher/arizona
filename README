@@ -1,52 +1,85 @@
-Check out the github here: https://github.com/strnadchristopher/arizona
+# Arizona
 
-Arizona is a fully customizable personal assistant with weather and Spotify integration*. It'll help you google stuff. It's the best.
+Arizona is a fully customizable personal assistant with weather and Spotify integration. It'll help you google stuff. It's the best.
 
-#Usage
-See Config.json to change things like your name and colors
-To Add or remove inputs for conversation, edit the 'inputs.txt' and 'responses.txt'
-Every line in 'inputs.txt' corresponds to the same line in 'responses.txt'. Separate alternate versions of inputs or responses with a '/'
+## Description
 
-#NEW FEATURES
+Arizona is meant to be a customizable open replacement for desktop assistants like Cortana and Siri. You can use any mp4 as your assistant's avatar. It's meant to be completely customizable to your liking, and because it's all written in HTML and CSS, that's completely easy.
 
-##Themes
+## New Features
+
+###Themes
 Create a folder in the themes directory with the name of your theme and add a file named "style.css" then, in config.json, set your theme to the name of the folder you created.
 You can add whatever css you want to the custom css file.
 
-##Background Video
+###Background Video
 Place a mp4 in the directory of your theme with the name 'bg.mp4'
 
-##Python Scripts
+###Python Scripts
 Run Python scripts by placing them in your 'scripts' folder and just type the name of the python file to run. (Must have python installed)
 
+## Getting Started
 
+### Dependencies
 
-#Commands
-##Mac OS with Spotify only
-'next', 'skip', 'next song' - skip track on spotify
-'lyrics' - display song lyrics from node-lyrics-api
+* Node js
+* Install Dependencies by running the following command in the arizona directory
+```
+npm install
+```
 
-##All Platforms
-'google [query]'' - open google in your browser with your query, faster than cortana (example: "google the shaggy dog")
-Any message that doesn't look like an input from the "inputs" file will be googled. So you can type "gene wilder" and it will google Gene Wilder
+### Installing
 
-'weather' - display the weather
+* Clone this repository or install with
+```
+npm install arizona
+```
 
-#Shortcuts
+### Executing program
 
-Ctrl+Q - Pull up assistant
+* Run this command in the arizona directory
+```
+npm start
+```
 
-Escape - Hide assistant
+##Customizing
+See Config.json to change settings like your name, your assistant's name, and more.
+To Add or remove inputs for conversation, edit the 'inputs.txt' and 'responses.txt'
+Every line in 'inputs.txt' corresponds to the same line in 'responses.txt'. Separate alternate versions of inputs or responses with a '/'
 
-F5 - Refresh Assistant
+##Commands
+###Mac OS with Spotify only
+*'next', 'skip', 'next song' - skip track on spotify
+*'lyrics' - display song lyrics from node-lyrics-api
 
-#TO-DO
+###All Platforms
+*'google [query]'' - open google in your browser with your query, faster than cortana (example: "google the shaggy dog")
+*Any message that doesn't look like an input from the "inputs" file will be googled. So you can type "gene wilder" and it will google Gene Wilder
 
-Voice Control and Response (considering using AWS)
-Spotify API and more music programs
+###'weather' - display the weather
 
-#Known Bugs
-(macOS only) When window is re-opened from being hidden, a strange shadow appears behind the app that doesn't go away.
+##Shortcuts
+
+*Ctrl+Q - Pull up assistant
+
+*Escape - Hide assistant
+
+*F5 - Refresh Assistant
+
+##TO-DO
+
+*Voice Control and Response (considering using AWS)
+*Spotify API and more music programs
+
+##Known Bugs
+*(macOS only) When window is re-opened from being hidden, a strange shadow appears behind the app that doesn't go away.
 Tray icon doesn't appear on windows.
 
-*only available on macOS currently.
+## Authors
+
+Christopher Strnad
+strnadchristopher@gmail.com
+
+## License
+
+This project is licensed under the GNU General Public License - see the LICENSE.md file for details
