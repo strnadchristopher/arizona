@@ -6,19 +6,23 @@
       <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
 	   <!--<link rel="stylesheet" type="text/css" href="themes/default/style.css">-->
      <script>
-        const fs = require('fs')
+       var bgVid = false;
+       const fs = require('fs')
        let rawData = fs.readFileSync('config.json');
        console.log(rawData);
        let parsedData = JSON.parse(rawData);
        console.log(parsedData);
        var link = "themes/" + parsedData["theme"] + "/style.css";
        document.write('<link rel="stylesheet" type="text/css" href="' + link + '">');
+       if(parsedData["backgroundVideo"] == "true"){
+         bgVid = true;
+       }
      </script>
      <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.0/animate.css">
   </head>
   <body id='body'>
     <div id="textBox" class="section"><input class="inputField" id="inputField" type='text' onclick="this.select()"></div>
-    <div id="mainWindow" class="section colorBackground"><video autoplay width="400" height="400"><source src="themes/dark/test.mp4" type="video/mp4"></video><h1 id="output" class="">Howdy!</h1><br/></div>
+    <div id="mainWindow" class="section colorBackground"><script>if(bgVid){document.write('<video loop autoplay>')}</script><source src="themes/dark/test.mp4" type="video/mp4"></video><h1 id="output" class="">Howdy!</h1><br/></div>
     <div id="notification" style="visibility:hidden;" class="section notification colorBackground"><h2 id="notifText"></h2></div>
   <link rel="stylesheet" src="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.0/animate.css">
   <script src="renderer.js"></script>

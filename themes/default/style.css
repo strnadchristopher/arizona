@@ -61,6 +61,12 @@ body{
 	animation: BackgroundAnim 30s ease infinite;
 	--moz-animation: BackgroundAnim 30s ease infinite;
 }
+video{
+	width:100%;
+	height:100%;
+	position:absolute;
+	z-index:-1;
+}
 #mainWindow{
 	margin-top:15px;
 	height:75%;
