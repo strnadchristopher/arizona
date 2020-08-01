@@ -114,9 +114,98 @@ function createWindow () {
 	globalShortcut.register('f7', function() {console.log('Showing console')
   win.webContents.openDevTools()})
   globalShortcut.register('f3', function() {getArtwork();})
+  //globalShortcut.register('f2', function() {skipTrack();})
   win.loadFile('index.html')
   // Open the DevTools.
   loaded = true;
+  if(!fs.existsSync("spotifyAuth.txt")){
+    //spotifyAuth();
+  }
+}
+
+function skipTrack(){
+  var SpotifyWebApi = require('spotify-web-api-node');
+  fs.readFile("spotifyAuth.txt", "utf8", function(err,data){
+      accessCode = data;
+      console.log("a code: " + accessCode)
+      var credentials = {
+      clientId: 'eb0929c190354d7ea0b7e8a065ad68ed',
+      clientSecret: '9d854a36798a4ce89c94b6ae9aeb7f90'
+      };
+      var spotifyApi = new SpotifyWebApi(credentials);
+      spotifyApi.setAccessToken('BQBM33YmxgUVo8Fk7t-QGGRlKdZ0HYVfUhA0tS2-PTsoLjwbMd1umr3B9kDH3GKtzZkv7F3sCEJnwZVKrbtEayXicP28Txtib54fo0CtD2qxi0lSEpe7EW1cVdEw2Dnh5Snx8EZzpgICmdJs1GNy8pL06dFsjYeeBv4VNQ');
+      // Retrieve an access token.
+
+      // Do search using the access token
+      spotifyApi.getMyCurrentPlaybackState({
+  })
+  .then(function(data) {
+    // Output items
+    console.log("Now Playing: ",data.body);
+  }, function(err) {
+    console.log('Something went wrong!', err);
+  });
+      /*
+      spotifyApi.authorizationCodeGrant(accessCode).then(
+      function(data) {
+        console.log('The token expires in ' + data.body['expires_in']);
+        console.log('The access token is ' + data.body['access_token']);
+        console.log('The refresh token is ' + data.body['refresh_token']);
+        // Set the access token on the API object to use it in later calls
+        spotifyApi.setAccessToken(data.body['access_token']);
+        spotifyApi.setRefreshToken(data.body['refresh_token']);
+      },
+      function(err) {
+        console.log('Something went wrong!', err);
+      })
+      fs.writeFile('spotifyAuth.txt', accessCode, function(err){
+        if (err) return console.log(err);
+      });
+
+      spotifyApi.getMyCurrentPlaybackState({
+      })
+      .then(function(data) {
+        // Output items
+        console.log("Now Playing: ",data.body);
+      }, function(err) {
+        console.log('Something went wrong!', err);
+      });
+      */
+      })
+
+}
+
+var authWindow;
+var accessCode;
+function spotifyAuth(){
+  authWindow = new BrowserWindow({
+    width: 500,
+    height: 500,
+	transparent: true,
+	frame: true,
+	x:0,
+	y:0,
+	alwaysOnTop:true,
+	resizable:false,
+    webPreferences: {
+      nodeIntegration: true
+    }
+  })
+  authWindow.loadURL("https://accounts.spotify.com/en/authorize?response_type=code&client_id=eb0929c190354d7ea0b7e8a065ad68ed&scopes=streaming&redirect_uri=https%3A%2F%2Fgithub.com%2F&state=e21392da45dbf4")
+  authWindow.show();
+  var url;
+  authWindow.on('page-title-updated', function(event, title){
+    url = authWindow.webContents.getURL();
+    console.log(url)
+  })
+  setTimeout(function(){
+    var newURL = authWindow.webContents.getURL();
+    accessCode = newURL.split("?")[1].substring(5)
+    console.log(accessCode);
+    fs.writeFile('spotifyAuth.txt', accessCode, function(err){
+      if (err) return console.log(err);
+    });
+  }, 5000)
 }
 
 app.whenReady().then(createWindow)

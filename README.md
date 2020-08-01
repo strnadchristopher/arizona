@@ -58,8 +58,7 @@ Every line in 'inputs.txt' corresponds to the same line in 'responses.txt'. Sepa
 ### All Platforms
 * 'google [query]'' - open google in your browser with your query, faster than cortana (example: "google the shaggy dog")
 * Any message that doesn't look like an input from the "inputs" file will be googled. So you can type "gene wilder" and it will google Gene Wilder
-
-### 'weather' - display the weather
+* 'weather' - display the weather
 
 ## Shortcuts
 
@@ -75,8 +74,8 @@ Every line in 'inputs.txt' corresponds to the same line in 'responses.txt'. Sepa
 * Spotify API and more music programs
 
 ## Known Bugs
-* (macOS only) When window is re-opened from being hidden, a strange shadow appears behind the app that doesn't go away.
-* Tray icon doesn't appear on windows.
+* (macOS A) When window is re-opened from being hidden, a strange shadow appears behind the app that doesn't go away.
+* (Windows) Tray icon doesn't appear.
 
 ## Authors
 
