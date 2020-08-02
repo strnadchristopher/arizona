@@ -8,7 +8,7 @@ Arizona is a fully customizable personal assistant with weather and Spotify inte
 ## Official Discord
 
 https://discord.gg/6VcgEUR
-Stop by and offer bug reports or suggestions. Maybe bingo night on Thursdays?
+Stop by and offer bug reports or suggestions. 
 
 ## Description
 
