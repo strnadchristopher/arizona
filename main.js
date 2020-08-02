@@ -118,10 +118,77 @@ function createWindow () {
   // Open the DevTools.
   loaded = true;
   if(!fs.existsSync("spotifyAuth.txt")){
-    //spotifyAuth();
+    spotifyAuth();
   }
 }
 
+function testAuth(){
+  var SpotifyWebApi = require('spotify-web-api-node');
+  var scopes = ['streaming','user-read-private', 'user-read-email'],
+  redirectUri = 'https://www.google.com/',
+  clientId = 'eb0929c190354d7ea0b7e8a065ad68ed',
+  state = 'some-state-of-my-choice';
+
+// Setting credentials can be done in the wrapper's constructor, or using the API object's setters.
+var spotifyApi = new SpotifyWebApi({
+  redirectUri: redirectUri,
+  clientId: clientId
+});
+
+// Create the authorization URL from secret and such
+var authorizeURL = spotifyApi.createAuthorizeURL(scopes, state);
+
+// https://accounts.spotify.com:443/authorize?client_id=5fe01282e44241328a84e7c5cc169165&response_type=code&redirect_uri=https://example.com/callback&scope=user-read-private%20user-read-email&state=some-state-of-my-choice
+console.log(authorizeURL);
+authWindow = new BrowserWindow({
+  width: 500,
+  height: 500,
+transparent: true,
+frame: true,
+x:0,
+y:0,
+alwaysOnTop:true,
+resizable:false,
+  webPreferences: {
+    nodeIntegration: true
+  }
+})
+authWindow.loadURL(authorizeURL)
+authWindow.show();
+
+var url;
+url = authWindow.webContents.getURL();
+console.log(url)
+authWindow.on('page-title-updated', function(event, title){
+  url = authWindow.webContents.getURL();
+  console.log(url)
+})
+setTimeout(function(){
+  var newURL = authWindow.webContents.getURL();
+  accessCode = newURL.split("?")[1].substring(5)
+  accessCode = accessCode.split("&")[0]
+  console.log(accessCode);
+  var code = accessCode;
+  //code = "BQDIocZszcIMa5UFIkMgXFnyZ5iJA-u6SIhMik-io6zEDBcSHp1FNjhFo_VpLKxin72Ds-FnS7NS6mgo5AkTjTfNMzccnRRb9QyeCRCQtQ44i5FgyrBufGYF0aaJzYhZZ3frtsPLfXQmYmXzUMXcPN0ZyeDP9ieS6vViow";
+  //fs.writeFile('spotifyAuth.txt', accessCode, function(err){
+    //if (err) return console.log(err);
+  //});
+  spotifyApi.authorizationCodeGrant(code).then(
+  function(data) {
+    console.log('The token expires in ' + data.body['expires_in']);
+    console.log('The access token is ' + data.body['access_token']);
+    console.log('The refresh token is ' + data.body['refresh_token']);
+
+    // Set the access token on the API object to use it in later calls
+    spotifyApi.setAccessToken(data.body['access_token']);
+    spotifyApi.setRefreshToken(data.body['refresh_token']);
+  },
+  function(err) {
+    console.log('Something went wrong!', err);
+  }
+);
+}, 5000)
+}
 function skipTrack(){
   var SpotifyWebApi = require('spotify-web-api-node');
   fs.readFile("spotifyAuth.txt", "utf8", function(err,data){
@@ -171,6 +238,11 @@ function skipTrack(){
 
 var authWindow;
 var accessCode;
+
+function getAuth(){
+
+}
+
 function spotifyAuth(){
   authWindow = new BrowserWindow({
     width: 500,
@@ -185,7 +257,8 @@ function spotifyAuth(){
       nodeIntegration: true
     }
   })
-  authWindow.loadURL("https://accounts.spotify.com/en/authorize?response_type=code&client_id=eb0929c190354d7ea0b7e8a065ad68ed&scopes=streaming&redirect_uri=https%3A%2F%2Fgithub.com%2F&state=e21392da45dbf4")
+  //Open spotify auth link
+  authWindow.loadURL("https://accounts.spotify.com/en/authorize?response_type=code&client_id=eb0929c190354d7ea0b7e8a065ad68ed&scopes=streaming&redirect_uri=https%3A%2F%2Fgithub.com%2F")
   authWindow.show();
   var url;
   authWindow.on('page-title-updated', function(event, title){
@@ -195,10 +268,53 @@ function spotifyAuth(){
   setTimeout(function(){
     var newURL = authWindow.webContents.getURL();
     accessCode = newURL.split("?")[1].substring(5)
+    authWindow.close()
     console.log(accessCode);
+    /*
     fs.writeFile('spotifyAuth.txt', accessCode, function(err){
       if (err) return console.log(err);
     });
+    */
+    var aToken, rToken;
+    const request = require('request')
+    request.post('https://accounts.spotify.com/api/token', {
+      form: {
+        "grant_type": "authorization_code",
+        "code": accessCode,
+        "redirect_uri": "https://github.com/"
+      },
+      headers: {'Authorization': "Basic ZWIwOTI5YzE5MDM1NGQ3ZWEwYjdlOGEwNjVhZDY4ZWQ6OWQ4NTRhMzY3OThhNGNlODljOTRiNmFlOWFlYjdmOTA="
+    },
+    json: true
+    }, (error, res, body) => {
+      if (error) {
+        console.error(error)
+        return
+      }
+      console.log(`statusCode: ${res.statusCode}`)
+      aToken = body["access_token"]
+      rToken = body["refresh_token"]
+      console.log("Access Token: " + body["access_token"]) //Access TOKEN goodies
+
+
+      var testAuth = "Bearer " + aToken;
+      //Test spotify
+      request.get("https://api.spotify.com/v1/artists/5PbpKlxQE0Ktl5lcNABoFf",{
+        headers: {"Authorization": testAuth},
+        json: true,
+      },(error, res, body) => {
+        if (error) {
+          console.error(error)
+          return
+        }
+        console.log(`statusCode: ${res.statusCode}`)
+        console.log(body)
+        win.webContents.send("artwork", body["images"][0]["url"])
+      })
+    })
+
+
+
   }, 5000)
 }
 
@@ -334,4 +450,8 @@ ipcMain.on('asynchronous-query', (event, arg) => { //When an input is given
 ipcMain.on('synchronous-message', (event, arg) => {
   console.log(arg) // prints "ping"
   event.returnValue = 'Sync return';
+})
+
+ipcMain.on('authMessage', (event, arg) => {
+  console.log(arg) // prints "ping"
 })

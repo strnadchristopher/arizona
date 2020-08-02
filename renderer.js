@@ -24,7 +24,6 @@ document.getElementById("mainWindow").addEventListener('click', function(){
 var inputField = document.getElementById("inputField");
 document.getElementById("inputField").focus();
 const { ipcRenderer } = require('electron')
-//console.log(ipcRenderer.sendSync('synchronous-message', 'ping')) // prints "pong"
 ipcRenderer.on('asynchronous-reply', (event, arg) => {
   console.log(arg)
   output.innerHTML = arg;
@@ -41,6 +40,10 @@ ipcRenderer.on('artwork', function(event, data){
   mainWindow.style.backgroundImage = "url('" + data + "')";
   mainWindow.classList.remove('colorBackground');
   mainWindow.classList.add('albumBackground');
+  var bgVideo = document.getElementById("bgVideo")
+  if(true){
+    bgVid.style.visibility = "hidden";
+  }
   //output.innerHTML = "Now playing: " + data + " by " + data;
 })
 ipcRenderer.on('trackInfo', function(event, data){
@@ -88,6 +91,9 @@ ipcRenderer.on('focusInput', function(event, data){
 ipcRenderer.on('slideOut', function(event, data){
   animateCSS("#body","slideOutDown")
 })
+ipcRenderer.on('slideOut', function(event, data){
+  animateCSS("#body","slideOutDown")
+})
 
 window.addEventListener("keyup", sendQuery, true);
 function sendQuery(e){
@@ -101,5 +107,38 @@ if(e.keyCode == 13){
   }
 }
 
-animateCSS("#output", 'bounce');
-animateCSS("#body", 'slideInUp');
+//animateCSS("#output", 'bounce');
+//animateCSS("#body", 'slideInUp');
+window.onSpotifyWebPlaybackSDKReady = () => {
+  ipcRenderer.send('authMessage', "fuck")
+  authSpotify();
+};
+
+function authSpotify(){
+  const play = ({
+    spotify_uri,
+    playerInstance: {
+      _options: {
+        getOAuthToken,
+        id
+      }
+    }
+  }) => {
+    getOAuthToken(access_token => {
+      fetch(`https://api.spotify.com/v1/me/player/play?device_id=${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ uris: [spotify_uri] }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${access_token}`
+        },
+      });
+    });
+  };
+
+  play({
+    playerInstance: new Spotify.Player({ name: "Arizona" }),
+    spotify_uri: 'spotify:track:7xGfFoTpQ2E7fRF5lN10tr',
+  });
+  ipcRenderer.send('authMessage', "WAAA")
+}

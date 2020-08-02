@@ -6,6 +6,7 @@ Arizona is a fully customizable personal assistant with weather and Spotify inte
 ![Picture of Arizona](https://github.com/strnadchristopher/arizona/blob/master/preview.png?raw=true)
 
 ## Official Discord
+
 https://discord.gg/6VcgEUR
 Stop by and offer bug reports or suggestions. Maybe bingo night on Thursdays?
 
@@ -20,7 +21,7 @@ Create a folder in the themes directory with the name of your theme and add a fi
 You can add whatever css you want to the custom css file.
 
 ### Background Video
-Place a mp4 in the directory of your theme with the name 'bg.mp4'
+Place a mp4 in the directory of your theme with the name 'bg.mp4'. Then just makes sure "backgroundVideo" is set to true in config.json
 
 ### Python Scripts
 Run Python scripts by placing them in your 'scripts' folder and just type the name of the python file to run. (Must have python installed)
