@@ -118,7 +118,7 @@ function createWindow () {
   // Open the DevTools.
   loaded = true;
   if(!fs.existsSync("spotifyAuth.txt")){
-    spotifyAuth();
+    //spotifyAuth();
   }
 }
 
