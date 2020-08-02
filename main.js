@@ -110,7 +110,6 @@ function createWindow () {
   })
 	globalShortcut.register('f5', function() {console.log('App Refreshed')
   win.reload()})
-	globalShortcut.register('escape', function() {console.log('Hiding app')})
 	globalShortcut.register('f7', function() {console.log('Showing console')
   win.webContents.openDevTools()})
   globalShortcut.register('f3', function() {getArtwork();})
