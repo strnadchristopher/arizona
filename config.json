@@ -5,7 +5,7 @@
     "assistantShortcut": "ctrl+q",
     "windowWidth": "450",
     "windowHeight": "500",
-    "secondScreen": "false",
+    "secondScreen": "true",
     "backgroundVideo": "true",
     "useSpotify": "true",
     "spotifyMiniPlayer": "true",

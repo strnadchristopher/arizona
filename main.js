@@ -478,6 +478,10 @@ ipcMain.on('switchSize', (event, arg) => {
     win.setSize(windowWidth, windowHeight)
     winX = screenWidth - windowWidth - 15;
     winY = screenHeight - windowHeight;
+    if(secondScreen){
+      winX = (screenWidth * 2) - windowWidth - xOffset;
+      console.log(winX,winY)
+    }
     win.setPosition(winX, winY - 200)
     if(!showTitleOnMiniPlayer){
       win.webContents.send("hideOutput");
@@ -492,6 +496,10 @@ ipcMain.on('switchSize', (event, arg) => {
     win.setSize(windowWidth, windowHeight)
     winX = screenWidth - windowWidth - 15;
     winY = screenHeight - windowHeight;
+    if(secondScreen){
+      winX = (screenWidth * 2) - windowWidth - xOffset;
+      console.log(winX,winY)
+    }
     win.setPosition(winX, winY)
     win.webContents.send("showOutput");
     state = "default";
