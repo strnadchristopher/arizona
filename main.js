@@ -331,7 +331,7 @@ async function getTrackInfo(){
       cTime = body["progess_ms"];
       duration = body["item"]["duration_ms"];
       isPlaying = body["is_playing"];
-      console.log(duration + " " + cTime)
+      //console.log(duration + " " + cTime)
       win.webContents.send('trackInfo', artist + ";" + trackName + ";" + album);
       //console.log(albumArtURL)
       win.webContents.send('artwork', albumArtURL)

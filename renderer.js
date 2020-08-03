@@ -12,6 +12,7 @@ var mainWindow = document.getElementById('mainWindow');
 var textBox = document.getElementById('textBox');
 var bgVideo = document.getElementById("bgVideo");
 var notif = document.getElementById("notification");
+var forceOutput = false;
 // When the animation ends, we clean the classes and resolve the Promise
 function handleAnimationEnd() {
   node.classList.remove(`${prefix}animated`, animationName);
@@ -34,6 +35,7 @@ ipcRenderer.on('asynchronous-reply', (event, arg) => {
   animateCSS("#output", 'bounce');
 })
 ipcRenderer.on('statusUpdate', function(event, data){ //On New message
+  forceOutput = true;
   if(output.innerHTML.startsWith(currentTrackTitle)){
     isPlaying = true;
   }
@@ -41,14 +43,11 @@ ipcRenderer.on('statusUpdate', function(event, data){ //On New message
   mainWindow.classList.remove("showingLyrics");
   showingLyrics = false;
   output.innerHTML = data;
-  if(isPlaying){
-    setTimeout(function(){
-        output.innerHTML = currentTrackTitle + " by " + currentTrackArtist;
-    }, 10000)
-  }
+  setTimeout(function(){
+      forceOutput = false;
+  }, 10000)
 })
 ipcRenderer.on('artwork', function(event, data){
-  console.log(data);
   mainWindow.style.backgroundImage = "url('" + data + "')";
   mainWindow.classList.remove('colorBackground');
   mainWindow.classList.add('albumBackground');
@@ -56,14 +55,11 @@ ipcRenderer.on('artwork', function(event, data){
   //output.innerHTML = "Now playing: " + data + " by " + data;
 })
 ipcRenderer.on('trackInfo', function(event, data){
-  console.log(data);
   var notifText = document.getElementById("notifText");
   currentTrackTitle = data.split(";")[1];
   currentTrackArtist = data.split(";")[0];
-  output.innerHTML = currentTrackTitle + " by " + currentTrackArtist;
-  if(miniMode){
-  }else{
-    notifShowing = true;
+  if(!forceOutput){
+    output.innerHTML = currentTrackTitle + " by " + currentTrackArtist;
   }
 })
 var showingLyrics = false;
