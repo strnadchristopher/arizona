@@ -3,8 +3,11 @@
     "username": "Chris",
     "assistantName": "Arizona",
     "assistantShortcut": "ctrl+q",
-    "windowWidth": "400",
+    "windowWidth": "450",
     "windowHeight": "500",
-    "secondScreen": "true",
-    "backgroundVideo": "true"
+    "secondScreen": "false",
+    "backgroundVideo": "true",
+    "useSpotify": "true",
+    "spotifyMiniPlayer": "true",
+    "showTitleOnMiniPlayer": "false"
 }

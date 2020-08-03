@@ -33,10 +33,13 @@ body{
 	flex-direction:column-reverse;
 	border-radius:10px;
 	animation-duration:500ms;
-	//background-color:rgba(0,0,0,.7);
-	//background-image: linear-gradient(to bottom, rgba(255,0,0,0), rgba(42, 238, 245,1));
+}
+.section::-webkit-scrollbar {
+  display: none;
 }
 .section{
+	-ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 	cursor:pointer;
 	display:flex;
 	margin:auto;
@@ -47,17 +50,21 @@ body{
 	align-items:center;
 	word-wrap: normal;
 	overflow:hidden;
-	background-color:#36393F;
+	transition-duration: 500ms;
 }
 #textBox{
+	background:rgba(0,0,0,.5);
 	margin-top:15px;
 	height:25%;
 	margin-bottom:20px;
-	background-color:#36393F;
 	--webkit-animation: BackgroundAnim 30s ease infinite;
 	animation: BackgroundAnim 30s ease infinite;
 	--moz-animation: BackgroundAnim 30s ease infinite;
 	overflow: hidden;
+	//background: linear-gradient(270deg, #209BB5, #16A6E1, #5E44B4, #53A367);//purply
+	box-shadow: none !important;
+  background-size: 800% 800%;
+	//background-image: linear-gradient(to bottom, #209BB5, #16A6E1, #5E44B4);
 	box-shadow: 0 15px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 	color:white;
 }
@@ -81,11 +88,17 @@ video{
 	--webkit-animation: MoveUpDown 6s infinite ease-in-out;
 	animation: MoveUpDown 6s infinite ease-in-out;
 	--moz-animation: MoveUpDown 6s infinite ease-in-out;
-	background-color:
+	background-color:none;
+}
+.miniPlayer{
+	height:25%;
 }
 .notification{
 	height:20%;
 	margin-top:15%;
+	overflow:visible;
+	background:white !important;
+	color:black !important;
 }
 .showingLyrics{
 	justify-content: flex-start;
@@ -94,13 +107,13 @@ video{
 }
 .albumBackground{
 	font-size: 10px;
-	background-size: 100vw auto;
-	height:100%;
+	background-size: 125vw auto;
+	width:100%;
 	background-position: center;
 	animation:none;
-	--webkit-animation: MoveUpDown 4s infinite ease-in-out;
-	animation: MoveUpDown 4s infinite ease-in-out;
-	--moz-animation: MoveUpDown 4s infinite ease-in-out;
+	--webkit-animation: MoveUpDown 6s infinite ease-in-out;
+	animation: MoveUpDown 6s infinite ease-in-out;
+	--moz-animation: MoveUpDown 6s infinite ease-in-out;
 }
 #inputField{
 	font-family: Poppins;

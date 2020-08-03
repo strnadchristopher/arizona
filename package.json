@@ -1,6 +1,6 @@
 {
   "_from": "arizona",
-  "_id": "arizona@0.0.5",
+  "_id": "arizona@0.0.11",
   "_inBundle": false,
   "_integrity": "sha512-wEgMNFRDDVSm7RwNy6zpqDFsLsEvgM5Jv3vzAD01YVzisnggKoTg2x7sJQDkw5t6ywK8O1jvne1Ogg9+j3gpuQ==",
   "_location": "/arizona",
@@ -63,7 +63,7 @@
     "start": "electron .",
     "bundle-dependencies": "bundle-dependencies"
   },
-  "version": "0.0.10",
+  "version": "0.0.11",
   "dependencies": {
     "@google-cloud/speech": "^4.1.1",
     "@google-cloud/text-to-speech": "^3.1.0",

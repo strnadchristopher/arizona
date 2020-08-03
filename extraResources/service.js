@@ -40,17 +40,13 @@ function getAnswer(){
   }else if(input == "skip"||
            input == "next song" ||
            input == "next"){
-						 if(onMac){
-      nextTrack();
-      parentPort.postMessage("!Playing next song.");
-		}
+      parentPort.postMessage("skip");
+  }else if(input == "previous"||
+           input == "previous song" ||
+           input == "back"){
+      parentPort.postMessage("previous");
   }else if(input == "lyrics"){
-		if(onMac){
-      parentPort.postMessage("!Finding lyrics...")
-      getLyrics();
-		}else{
-			parentPort.postMessage("!Sorry, that only works on Mac right now.")
-		}
+      parentPort.postMessage("lyrics")
   }else if(input == "options" ||
           input == "config"){
       parentPort.postMessage("options")
@@ -63,7 +59,11 @@ function getAnswer(){
     python.stdout.on('data',function(data){
         console.log("data: ",data.toString('utf8'));
     });
-  }else{
+  }
+  else if(input.startsWith("play")){
+      parentPort.postMessage(input);
+  }
+  else{
     	for(var i in inputs){
     		var splitString = inputs[i].split("/");
     		for(var x in splitString){ //Each individual input string
@@ -112,30 +112,7 @@ function matchesScript(iString){
       }
   });
 }
-async function getLyrics(trackData){
-  const lyrics = require('node-lyrics-api');
-  const [artist, title] = await Promise.all([getArtist(), getTrackTitle()]);
-  let ourSong = await lyrics(title + " " + artist);
-  if(ourSong.status.failed) return console.log('Bad Response');
-  console.log(ourSong.content[0].lyrics);
-  parentPort.postMessage("*" + ourSong.content[0].lyrics);
-}
-async function getArtist(){
-  const {stdout} = await execa('osascript', ['-e',
-  'tell application "Spotify" to return current track\'s artist']);
-  //console.log(art);
-  return stdout;
-}
-async function getTrackTitle(){
-  const {stdout} = await execa('osascript', ['-e',
-  'tell application "Spotify" to return current track\'s name']);
-  return stdout;
-}
-async function nextTrack(){
-  const {stdout} = await execa('osascript', ['-e',
-  'tell application "Spotify" to next track']);
-  console.log(stdout);
-}
+
 //Levenshtein
 function levenshteinDistance (a, b){
 	if(a.length == 0) return b.length;

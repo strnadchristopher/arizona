@@ -1,14 +1,30 @@
 Arizona
 ======
 
-Arizona is a fully customizable personal assistant with weather and Spotify integration. It'll help you google stuff. It's the best.
+Arizona is a fully customizable personal assistant and Spotify miniplayer. It'll help you google stuff. It's the best.
 
-![Picture of Arizona](https://github.com/strnadchristopher/arizona/blob/master/preview.png?raw=true)
+![Picture of Arizona](https://github.com/strnadchristopher/arizona/blob/master/preview.gif?raw=true)
+
+## SPOTIFY UPDATE
+
+Spotify support is being added in version 0.0.11! If "spotifyMiniPlayer" is set to true in your config, an authorization window will pop up. And it should be as simple as any other oAuth situation.
+
+REQUIRES SPOTIFY PREMIUM ACCOUNT
+
+### New Commands
+* 'play [song name]' - play any song from spotify
+* 'skip', 'next song' - skip song
+* 'previous' - previous song
+* 'lyrics' - display song lyrics from node-lyrics-api
+
+## Spotify Mini Player
+
+If enabled, instead of the app closing when you click away, it will turn into a miniplayer.
 
 ## Official Discord
 
 https://discord.gg/6VcgEUR
-Stop by and offer bug reports or suggestions. 
+Stop by and offer bug reports or suggestions.
 
 ## Description
 
@@ -30,17 +46,19 @@ Run Python scripts by placing them in your 'scripts' folder and just type the na
 
 ### Dependencies
 
-* Node js
-* Install Dependencies by running the following command in the arizona directory
-```
-npm install
-```
-
 ### Installing
+
+* Node js
 
 * Clone this repository or install with
 ```
 npm install arizona
+```
+
+
+* Install Dependencies by running the following command in the arizona directory
+```
+npm install
 ```
 
 ### Executing program
@@ -56,9 +74,6 @@ To Add or remove inputs for conversation, edit the 'inputs.txt' and 'responses.t
 Every line in 'inputs.txt' corresponds to the same line in 'responses.txt'. Separate alternate versions of inputs or responses with a '/'
 
 ## Commands
-### Mac OS with Spotify only
-* 'next', 'skip', 'next song' - skip track on spotify
-* 'lyrics' - display song lyrics from node-lyrics-api
 
 ### All Platforms
 * 'google [query]'' - open google in your browser with your query, faster than cortana (example: "google the shaggy dog")
@@ -69,18 +84,13 @@ Every line in 'inputs.txt' corresponds to the same line in 'responses.txt'. Sepa
 
 * Ctrl+Q - Pull up assistant
 
-* Escape - Hide assistant
-
-* F5 - Refresh Assistant
-
 ## TO-DO
 
 * Voice Control and Response (considering using AWS)
-* Spotify API and more music programs
 
 ## Known Bugs
 * (macOS A) When window is re-opened from being hidden, a strange shadow appears behind the app that doesn't go away.
-* (Windows) Tray icon doesn't appear.
+* (All) Tray icons don't appear yet. App looks glitchy when changing states from miniplayer to default.
 
 ## Authors
 

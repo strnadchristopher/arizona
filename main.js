@@ -22,7 +22,7 @@ fs.readFile('q&a/responses.txt', function (err, data) {
   responses = data.toString().split("\n");
   //console.log("Asynchronous read: " + data.toString());
 });
-var username, assistantName, assistantShortcut, theme, cusW, cusH, secondScreen;
+var username, assistantName, assistantShortcut, theme, cusW, cusH, secondScreen, useSpotify, spotifyMiniPlayer, showTitleOnMiniPlayer;
 //READ Config
 function loadConfig(){
   var initConfig = readConfig();
@@ -31,7 +31,10 @@ function loadConfig(){
   assistantShortcut = initConfig["assistantShortcut"]
   cusW = initConfig["windowWidth"];
   cusH = initConfig["windowHeight"];
-  secondScreen = (initConfig["secondScreen"] === 'true')
+  secondScreen = (initConfig["secondScreen"] === 'true');
+  useSpotify = (initConfig["useSpotify"] === 'true');
+  spotifyMiniPlayer = (initConfig["spotifyMiniPlayer"]==='true');
+  showTitleOnMiniPlayer = (initConfig["showTitleOnMiniPlayer"]==='true');
   updateWindowPosition(parseInt(cusW),parseInt(cusH));
 }
 
@@ -56,13 +59,20 @@ var path = require('path')
 var iconpath = path.join(__dirname, 'extraResources', 'icon.png') // path of y
 var serviceScript = path.join(__dirname, 'extraResources','service.js');
 
+//Window stuff
+var screenWidth;
+var screenHeight;
+var windowWidth = parseInt(cusW);
+var windowHeight = parseInt(cusH);
+const xOffset = 15;
+var winX;
+var winY;
 function createWindow () {
-  var windowWidth = parseInt(cusW);
-  var windowHeight = parseInt(cusH);
   const { width, height } = screen.getPrimaryDisplay().workAreaSize
-  const xOffset = 15;
-  const winX = width - windowWidth - xOffset;
-  const winY = height - windowHeight;
+  screenWidth = width;
+  screenHeight = height;
+  winX = width - windowWidth - xOffset;
+  winY = height - windowHeight;
   // Create the browser window.
   win = new BrowserWindow({
     width: windowWidth,
@@ -83,16 +93,20 @@ function createWindow () {
       win.hide();
   });
   win.on('blur', function(event){
-    //event.preventDefault();
-    win.webContents.send('slideOut')
-    setTimeout(function(){
-      win.hide();
-    },500)
-    //win.hide()
+    if(!spotifyMiniPlayer || !spotifyAuthSuccess){
+      win.webContents.send('slideOut')
+      setTimeout(function(){
+        win.hide();
+      },500)
+    }else{
+      win.webContents.send('miniPlayer');
+    }
+
   })
   win.on('show', function(event){
-    //win.hid()
-    //createWindow()
+    if(spotifyAuthSuccess){
+      getTrackInfo();
+    }
   })
   win.on('close', function (event) {
       if(!app.isQuiting){
@@ -105,142 +119,70 @@ function createWindow () {
 	//Add refresh shortcut
   globalShortcut.register(assistantShortcut, function() {
     console.log('Bringing back app')
-    win.show();
-    win.webContents.send('focusInput', 'Swag');
+    if(state == "default"){
+      win.show();
+    }else{
+      console.log("switching state to default")
+      win.webContents.send("switchState","default");
+    }
+    win.webContents.focus();
   })
-	globalShortcut.register('f5', function() {console.log('App Refreshed')
-  win.reload()})
 	globalShortcut.register('f7', function() {console.log('Showing console')
   win.webContents.openDevTools()})
   globalShortcut.register('f3', function() {getArtwork();})
-  //globalShortcut.register('f2', function() {skipTrack();})
+  globalShortcut.register('f2', function() {skipTrack();})
   win.loadFile('index.html')
   // Open the DevTools.
   loaded = true;
-  if(!fs.existsSync("spotifyAuth.txt")){
-    //spotifyAuth();
+  if(useSpotify){
+    spotifyAuth(); //Get access code
+  }else{
+    setTimeout(function(){win.webContents.send("hideControls");},3000);
   }
+  if(!spotifyMiniPlayer){
+    setTimeout(function(){win.webContents.send("hideControls");},3000);
+  }
+  setTimeout(function(){
+    win.show();
+  },1000)
 }
 
-function testAuth(){
-  var SpotifyWebApi = require('spotify-web-api-node');
-  var scopes = ['streaming','user-read-private', 'user-read-email'],
-  redirectUri = 'https://www.google.com/',
-  clientId = 'eb0929c190354d7ea0b7e8a065ad68ed',
-  state = 'some-state-of-my-choice';
-
-// Setting credentials can be done in the wrapper's constructor, or using the API object's setters.
-var spotifyApi = new SpotifyWebApi({
-  redirectUri: redirectUri,
-  clientId: clientId
-});
-
-// Create the authorization URL from secret and such
-var authorizeURL = spotifyApi.createAuthorizeURL(scopes, state);
-
-// https://accounts.spotify.com:443/authorize?client_id=5fe01282e44241328a84e7c5cc169165&response_type=code&redirect_uri=https://example.com/callback&scope=user-read-private%20user-read-email&state=some-state-of-my-choice
-console.log(authorizeURL);
-authWindow = new BrowserWindow({
-  width: 500,
-  height: 500,
-transparent: true,
-frame: true,
-x:0,
-y:0,
-alwaysOnTop:true,
-resizable:false,
-  webPreferences: {
-    nodeIntegration: true
-  }
-})
-authWindow.loadURL(authorizeURL)
-authWindow.show();
-
-var url;
-url = authWindow.webContents.getURL();
-console.log(url)
-authWindow.on('page-title-updated', function(event, title){
-  url = authWindow.webContents.getURL();
-  console.log(url)
-})
-setTimeout(function(){
-  var newURL = authWindow.webContents.getURL();
-  accessCode = newURL.split("?")[1].substring(5)
-  accessCode = accessCode.split("&")[0]
-  console.log(accessCode);
-  var code = accessCode;
-  //code = "BQDIocZszcIMa5UFIkMgXFnyZ5iJA-u6SIhMik-io6zEDBcSHp1FNjhFo_VpLKxin72Ds-FnS7NS6mgo5AkTjTfNMzccnRRb9QyeCRCQtQ44i5FgyrBufGYF0aaJzYhZZ3frtsPLfXQmYmXzUMXcPN0ZyeDP9ieS6vViow";
-  //fs.writeFile('spotifyAuth.txt', accessCode, function(err){
-    //if (err) return console.log(err);
-  //});
-  spotifyApi.authorizationCodeGrant(code).then(
-  function(data) {
-    console.log('The token expires in ' + data.body['expires_in']);
-    console.log('The access token is ' + data.body['access_token']);
-    console.log('The refresh token is ' + data.body['refresh_token']);
-
-    // Set the access token on the API object to use it in later calls
-    spotifyApi.setAccessToken(data.body['access_token']);
-    spotifyApi.setRefreshToken(data.body['refresh_token']);
-  },
-  function(err) {
-    console.log('Something went wrong!', err);
-  }
-);
-}, 5000)
-}
-function skipTrack(){
-  var SpotifyWebApi = require('spotify-web-api-node');
-  fs.readFile("spotifyAuth.txt", "utf8", function(err,data){
-      accessCode = data;
-      console.log("a code: " + accessCode)
-      var spotifyApi = new SpotifyWebApi(credentials);
-      // Retrieve an access token.
-
-      // Do search using the access token
-      spotifyApi.getMyCurrentPlaybackState({
-  })
-  .then(function(data) {
-    // Output items
-    console.log("Now Playing: ",data.body);
-  }, function(err) {
-    console.log('Something went wrong!', err);
-  });
-      /*
-      spotifyApi.authorizationCodeGrant(accessCode).then(
-      function(data) {
-        console.log('The token expires in ' + data.body['expires_in']);
-        console.log('The access token is ' + data.body['access_token']);
-        console.log('The refresh token is ' + data.body['refresh_token']);
-        // Set the access token on the API object to use it in later calls
-        spotifyApi.setAccessToken(data.body['access_token']);
-        spotifyApi.setRefreshToken(data.body['refresh_token']);
-      },
-      function(err) {
-        console.log('Something went wrong!', err);
-      })
-      fs.writeFile('spotifyAuth.txt', accessCode, function(err){
-        if (err) return console.log(err);
-      });
-
-      spotifyApi.getMyCurrentPlaybackState({
-      })
-      .then(function(data) {
-        // Output items
-        console.log("Now Playing: ",data.body);
-      }, function(err) {
-        console.log('Something went wrong!', err);
-      });
-      */
-      })
-
-}
-
+//SPOTIFY STUFF HERE
+const request = require('request')
 var authWindow;
 var accessCode;
-
-function getAuth(){
-
+var aToken, rToken;
+var spotifyAuthSuccess = false;
+var artist, trackName, album, albumArtURL, cTime, duration, isPlaying;
+function getTokens(){
+  fs.readFile("spotifyAuth.txt", "utf8", function(err, data) {
+    //console.log("Spotify auth found: " + data);
+    accessCode = data;
+    request.post('https://accounts.spotify.com/api/token', {
+      form: {
+        "grant_type": "authorization_code",
+        "code": accessCode,
+        "redirect_uri": "https://github.com/"
+      },
+      headers: {'Authorization': "Basic ZWIwOTI5YzE5MDM1NGQ3ZWEwYjdlOGEwNjVhZDY4ZWQ6OWQ4NTRhMzY3OThhNGNlODljOTRiNmFlOWFlYjdmOTA="
+    },
+    json: true
+    }, (error, res, body) => {
+      if (error) {
+        console.error(error)
+        spotifyAuth();
+        return
+      }
+      //console.log(`statusCode: ${res.statusCode}`)
+      aToken = body["access_token"]
+      rToken = body["refresh_token"]
+      spotifyAuthSuccess = true;
+      console.log("Authorization successful")
+      getTrackInfo();
+      //console.log(body)
+      //console.log("Access Token: " + body["access_token"]) //Access TOKEN goodies
+    })
+  });
 }
 
 function spotifyAuth(){
@@ -257,65 +199,167 @@ function spotifyAuth(){
       nodeIntegration: true
     }
   })
-  //Open spotify auth link
-  authWindow.loadURL("https://accounts.spotify.com/en/authorize?response_type=code&client_id=eb0929c190354d7ea0b7e8a065ad68ed&scopes=streaming&redirect_uri=https%3A%2F%2Fgithub.com%2F")
-  authWindow.show();
-  var url;
+  //Open spotify auth link, get access code
+  var url = "https://accounts.spotify.com/en/authorize?response_type=code&client_id=eb0929c190354d7ea0b7e8a065ad68ed&scope=user-modify-playback-state%20user-read-currently-playing%20user-read-playback-state%20user-top-read&redirect_uri=https%3A%2F%2Fgithub.com%2F";
+  authWindow.loadURL(url)
+  authWindow.hide();
+  var url = "";
   authWindow.on('page-title-updated', function(event, title){
     url = authWindow.webContents.getURL();
-    console.log(url)
   })
-  setTimeout(function(){
+  var i = setInterval(function(){
     var newURL = authWindow.webContents.getURL();
-    accessCode = newURL.split("?")[1].substring(5)
-    authWindow.close()
-    console.log(accessCode);
-    /*
-    fs.writeFile('spotifyAuth.txt', accessCode, function(err){
-      if (err) return console.log(err);
-    });
-    */
-    var aToken, rToken;
-    const request = require('request')
-    request.post('https://accounts.spotify.com/api/token', {
-      form: {
-        "grant_type": "authorization_code",
-        "code": accessCode,
-        "redirect_uri": "https://github.com/"
-      },
-      headers: {'Authorization': "Basic ZWIwOTI5YzE5MDM1NGQ3ZWEwYjdlOGEwNjVhZDY4ZWQ6OWQ4NTRhMzY3OThhNGNlODljOTRiNmFlOWFlYjdmOTA="
-    },
-    json: true
-    }, (error, res, body) => {
-      if (error) {
-        console.error(error)
-        return
-      }
-      console.log(`statusCode: ${res.statusCode}`)
-      aToken = body["access_token"]
-      rToken = body["refresh_token"]
-      console.log("Access Token: " + body["access_token"]) //Access TOKEN goodies
+    if(!newURL.includes("spotify")){ //If auth is done
+      clearInterval(i)
+      accessCode = newURL.split("?")[1].substring(5)
+      fs.writeFile('spotifyAuth.txt', accessCode, function(err){
+        if (err) return console.log(err);
+        authWindow.close()
+        getTokens();
+      });
+    }else{
+      authWindow.show();
+    }
+  },5000)
+}
 
+function pauseTrack(){
+  console.log("Pausing Track");
+  request.put('https://api.spotify.com/v1/me/player/pause', {
+    headers: {'Authorization': "Bearer " + aToken},
+  json: true
+  }, (error, res, body) => {
+    if (error) {
+      console.error(error)
+      return
+    }
+    console.log(`statusCode: ${res.statusCode}`)
+    isPlaying = false;
+  })
+}
 
-      var testAuth = "Bearer " + aToken;
-      //Test spotify
-      request.get("https://api.spotify.com/v1/artists/5PbpKlxQE0Ktl5lcNABoFf",{
-        headers: {"Authorization": testAuth},
-        json: true,
-      },(error, res, body) => {
-        if (error) {
-          console.error(error)
-          return
-        }
-        console.log(`statusCode: ${res.statusCode}`)
-        console.log(body)
-        win.webContents.send("artwork", body["images"][0]["url"])
-      })
-    })
+function resumeTrack(){
+  request.put('https://api.spotify.com/v1/me/player/play', {
+    headers: {'Authorization': "Bearer " + aToken},
+  json: true
+  }, (error, res, body) => {
+    if (error) {
+      console.error(error)
+      return
+    }
+    console.log(`statusCode: ${res.statusCode}`)
+    isPlaying = true;
+  })
+}
 
+function skipTrack(){
+  request.post('https://api.spotify.com/v1/me/player/next', {
+    headers: {'Authorization': "Bearer " + aToken},
+  json: true
+  }, (error, res, body) => {
+    if (error) {
+      console.error(error)
+      return
+    }
+    console.log(`statusCode: ${res.statusCode}`)
+    setTimeout(getTrackInfo,1000)
+  })
+}
 
+function previousTrack(){
+  request.post('https://api.spotify.com/v1/me/player/previous', {
+    headers: {'Authorization': "Bearer " + aToken},
+  json: true
+  }, (error, res, body) => {
+    if (error) {
+      console.error(error)
+      return
+    }
+    console.log(`statusCode: ${res.statusCode}`)
+    getTrackInfo();
+  })
+}
 
-  }, 5000)
+function playTrack(songName){
+  var foundTrack; //Search for the artist
+  request.get('https://api.spotify.com/v1/search/?q='+encodeURI(songName)+'&type=track', {
+    headers: {'Authorization': "Bearer " + aToken},
+  json: true
+  }, (error, res, body) => {
+    if (error) {
+      console.error(error)
+      return
+    }
+    console.log(`statusCode: ${res.statusCode}`)
+    //console.log(body)
+    if(body["tracks"]["items"].length > 0){
+      foundTrack = body["tracks"]["items"]["0"]["uri"] //Play the first song
+      request.post('https://api.spotify.com/v1/me/player/queue?uri='+foundTrack, {
+        headers: {'Authorization': "Bearer " + aToken},
+        json: true
+        }, (error, res, body) => {
+          if (error) {
+            console.error(error)
+            return
+          }
+          console.log(`statusCode: ${res.statusCode}`)
+          //console.log(body);
+          skipTrack();
+        })
+    }else{
+      win.webContents.send("statusUpdate", "Couldn't find any matching songs. Sorry.")
+    }
+  })
+}
+var t=setInterval(checkSpotifyArt,15000);
+async function getTrackInfo(){
+  request.get('https://api.spotify.com/v1/me/player/currently-playing', {
+    headers: {'Authorization': "Bearer " + aToken},
+  json: true
+  }, (error, res, body) => {
+    if (error) {
+      console.error(error)
+      return
+    }
+    console.log(`statusCode: ${res.statusCode}`)
+    if(body != void(0)){
+      //console.log(body["item"]["name"])
+      artist = body["item"]["artists"][0]["name"];
+      trackName = body["item"]["name"]
+      album = body["item"]["album"]["name"]
+      albumArtURL  = body["item"]["album"]["images"][0]["url"]
+      cTime = body["progess_ms"];
+      duration = body["item"]["duration_ms"];
+      isPlaying = body["is_playing"];
+      console.log(duration + " " + cTime)
+      win.webContents.send('trackInfo', artist + ";" + trackName + ";" + album);
+      //console.log(albumArtURL)
+      win.webContents.send('artwork', albumArtURL)
+      shouldUpdateTrack = false;
+    }else{
+      win.webContents.send('statusUpdate','No song playing');
+    }
+  })
+}
+
+var artworkURL;
+var shouldUpdateTrack = true;
+function checkSpotifyArt(){
+  if(win.isVisible() && spotifyAuthSuccess){
+    console.log("Checking for song change.")
+    getTrackInfo();
+  }else{
+    shouldUpdateTrack = true;
+  }
+}
+
+async function getLyrics(trackData){
+  const lyrics = require('node-lyrics-api');
+  let ourSong = await lyrics(trackName + " " + artist);
+  if(ourSong.status.failed) return console.log('Bad Response');
+  //console.log(ourSong.content[0].lyrics);
+  //parentPort.postMessage("*" + ourSong.content[0].lyrics);
+  win.webContents.send('lyrics',ourSong.content[0].lyrics)
 }
 
 app.whenReady().then(createWindow)
@@ -323,22 +367,38 @@ app.whenReady().then(createWindow)
 var currentMessage;
 
 function readAnswers(message){ // Handle messages from service
-  if(message.startsWith("!")){
+  if(message.startsWith("!")){ //Read message from Arizona
     currentMessage = message.substring(1,message.length);
-    //speak(currentMessage);
     currentMessage = currentMessage.replace("%username%", username);
     console.log(currentMessage);
     win.webContents.send('statusUpdate', currentMessage);
-  }else if(message.startsWith("*")){
-    currentMessage = message.substring(1,message.length);
-    win.webContents.send('notification', "Lyrics found");
-    win.webContents.send('lyrics', currentMessage);
+  }else if(message.startsWith("lyrics")){
+    getLyrics();
   }else if(message == "options"){
     var configSave = readConfig();
     win.webContents.send('options', configSave);
   }else if(message.startsWith("google")){
     var search = message.split(":")[1];
     showGoogle(search);
+  }else if(message.startsWith("skip")){
+    if(spotifyAuthSuccess){
+        skipTrack();
+    }else{
+      win.webContents.send('statusUpdate','!Link your Spotify account to control your music!')
+    }
+  }else if(message.startsWith("previous")){
+    if(spotifyAuthSuccess){
+      previousTrack();
+    }else{
+      win.webContents.send('statusUpdate','!Link your Spotify account to control your music!')
+    }
+  }else if(message.startsWith("play")){
+    if(spotifyAuthSuccess){
+      message = message.substring(5);
+      playTrack(message);
+    }else{
+      win.webContents.send('statusUpdate','!Link your Spotify account to control your music!')
+    }
   }else{
     console.log(message);
   }
@@ -348,47 +408,6 @@ function showGoogle(query){
   var link = "https://www.google.com/search?q=" +query.replace("google","").replace(" ","+");
   require("electron").shell.openExternal(link);
 }
-var artworkURL;
-var spotifyUpdateInterval = 3; //In seconds
-
-function checkSpotifyArt(){
-  getArtwork();
-}
-
-async function getArtwork(){
-  const {stdout} = await execa('osascript', ['-e',
-  'tell application "Spotify" to return current track\'s artwork url']);
-  if(stdout != artworkURL){
-    artworkURL = stdout;
-    win.webContents.send('artwork', stdout);
-    showNotification("Now Playing");
-    getTrackInfo();
-  }
-}
-
-async function getTrackInfo(){
-  const [artist, title] = await Promise.all([getArtist(), getTrackTitle()]);
-    win.webContents.send('trackInfo', artist + ";" + title);
-}
-async function getArtist(){
-  const {stdout} = await execa('osascript', ['-e',
-  'tell application "Spotify" to return current track\'s artist']);
-  //console.log(art);
-  return stdout;
-}
-async function getTrackTitle(){
-  const {stdout} = await execa('osascript', ['-e',
-  'tell application "Spotify" to return current track\'s name']);
-  return stdout;
-}
-var onMac = false;
-if (process.platform == 'darwin') {
-  onMac = true;
-}
-if(onMac){
-  var t=setInterval(checkSpotifyArt,spotifyUpdateInterval * 1000);
-}
-
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
@@ -430,7 +449,7 @@ function runService(workerData) {
 }
 
 function showNotification(notif){
-  win.webContents.send('notification', notif);
+  //win.webContents.send('notification', notif);
 }
 
 async function run() {
@@ -446,12 +465,79 @@ ipcMain.on('asynchronous-query', (event, arg) => { //When an input is given
 	}
 
 })
-
+var state = "default";
 ipcMain.on('synchronous-message', (event, arg) => {
   console.log(arg) // prints "ping"
   event.returnValue = 'Sync return';
 })
-
+ipcMain.on('switchSize', (event, arg) => {
+  if(state == "default"){
+    windowWidth = 450;
+    windowHeight = 200;
+    console.log("Switching to miniplayer: " + windowWidth + ", " + windowHeight)
+    win.setSize(windowWidth, windowHeight)
+    winX = screenWidth - windowWidth - 15;
+    winY = screenHeight - windowHeight;
+    win.setPosition(winX, winY - 200)
+    if(!showTitleOnMiniPlayer){
+      win.webContents.send("hideOutput");
+    }else{
+      win.webContents.send("showOutput");
+    }
+    state = "miniPlayer";
+  }else{
+    windowWidth = 450;
+    windowHeight = 500;
+    console.log("Switching to default: " + windowWidth + ", " + windowHeight)
+    win.setSize(windowWidth, windowHeight)
+    winX = screenWidth - windowWidth - 15;
+    winY = screenHeight - windowHeight;
+    win.setPosition(winX, winY)
+    win.webContents.send("showOutput");
+    state = "default";
+  }
+})
+ipcMain.on('previousSong', (event, arg) => {
+  if(spotifyAuthSuccess){
+    previousTrack();
+  }
+})
+ipcMain.on('nextSong', (event, arg) => {
+  if(spotifyAuthSuccess){
+    skipTrack();
+  }
+})
+ipcMain.on('console', (event, arg) => {
+  console.log(arg)
+})
+ipcMain.on('toggleMusic', (event, arg) => { //Check playback state then change it
+  if(spotifyAuthSuccess){
+    request.get('https://api.spotify.com/v1/me/player', {
+      headers: {'Authorization': "Bearer " + aToken},
+    json: true
+    }, (error, res, body) => {
+      if (error) {
+        console.error(error)
+        return
+      }
+      console.log(`statusCode: ${res.statusCode}`)
+      if(body != void(0)){
+        console.log(body["is_playing"])
+        isPlaying = body["is_playing"];
+        setTimeout(function(){
+          win.webContents.send('updatePlaybackState', isPlaying)
+          if(isPlaying){
+            pauseTrack();
+          }else{
+            resumeTrack();
+          }
+        }, 500)
+      }else{
+        win.webContents.send('statusUpdate','No song playing');
+      }
+    })
+  }
+})
 ipcMain.on('authMessage', (event, arg) => {
   console.log(arg) // prints "ping"
 })
