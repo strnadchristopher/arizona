@@ -23,9 +23,7 @@ function handleAnimationEnd() {
 node.addEventListener('animationend', handleAnimationEnd);
 });
 const output = document.getElementById("output");
-document.getElementById("mainWindow").addEventListener('click', function(){
-  document.getElementById("inputField").focus();
-})
+
 var inputField = document.getElementById("inputField");
 document.getElementById("inputField").focus();
 const { ipcRenderer } = require('electron')
@@ -36,9 +34,6 @@ ipcRenderer.on('asynchronous-reply', (event, arg) => {
 })
 ipcRenderer.on('statusUpdate', function(event, data){ //On New message
   forceOutput = true;
-  if(output.innerHTML.startsWith(currentTrackTitle)){
-    isPlaying = true;
-  }
   console.log(data);
   mainWindow.classList.remove("showingLyrics");
   showingLyrics = false;
@@ -98,6 +93,7 @@ ipcRenderer.on('showOutput', function(event, data){
 })
 var states = ["default", "miniPlayer", "configMenu"]
 var currentState = "default";
+var configMenu = document.getElementById("configMenu");
 var spotControls = document.getElementById("miniPlayerControls");
 function switchState(state){
   if(state != currentState){
@@ -109,11 +105,13 @@ function switchState(state){
           currentState = state;
           textBox.style.height = "25%";
           mainWindow.style.height = "75%";
-          bgVideo.style.width = "125%";
-          bgVideo.style.height = "125%";
+          bgVideo.style.width = "auto";
+          bgVideo.style.height = "auto";
           inputField.click();
           mainWindow.style.display = "flex";
+          output.style.display = "block";
           ipcRenderer.send("switchSize");
+          configMenu.style.display = "none";
           break;
         case states[1]: // Miniplayer state
           currentState = state;
@@ -127,12 +125,64 @@ function switchState(state){
           currentState = state;
           textBox.style.height = "0px";
           mainWindow.style.height = "100%";
-          bgVideo.style.display = "none";
+          //bgVideo.style.display = "none";
+          output.style.display = "none";
+          configMenu.style.display = "flex";
+          document.getElementById("miniPlayerControls").style.display = "none";
+          populateConfigMenu();
           break;
         default:
           currentState = states[0];
     }
   }
+}
+var username, assistantName, assistantShortcut, theme, cusW, cusH, secondScreen, useSpotify, spotifyMiniPlayer, showTitleOnMiniPlayer;
+//READ Config
+function loadConfig(){
+  var initConfig = readConfig();
+  username = initConfig["username"];
+  assistantName = initConfig["assistantName"]
+  assistantShortcut = initConfig["assistantShortcut"]
+  cusW = initConfig["windowWidth"];
+  cusH = initConfig["windowHeight"];
+  cusW = parseInt(cusW);
+  cusH = parseInt(cusH);
+  secondScreen = (initConfig["secondScreen"] === 'true');
+  useSpotify = (initConfig["useSpotify"] === 'true');
+  spotifyMiniPlayer = (initConfig["spotifyMiniPlayer"]==='true');
+  showTitleOnMiniPlayer = (initConfig["showTitleOnMiniPlayer"]==='true');
+}
+var config;
+function populateConfigMenu(){
+  let rawData = fs.readFileSync('config.json');
+  console.log(rawData);
+  //console.log("poo")
+  config = JSON.parse(rawData);
+  var configForm = document.getElementById("configForm");
+  var configString = "";
+  var values = Object.values(config);
+  var keys = Object.keys(config);
+  for(var i = 0; i < values.length; i++){
+    configString += "<span class='configItem'>" + keys[i] + " : <input name='" + keys[i] + "' class='configInput' type='text' value='" + values[i] + "'></span><br/>";
+  }
+  configString += "<button method='post' onclick='saveConfig(event)'>Save</button>"
+  ipcRenderer.send('console',configString);
+  configForm.innerHTML = configString;
+}
+function saveConfig(event){
+  event.preventDefault();
+  var form = document.getElementById("configForm");
+  var fields = form.getElementsByTagName("input");
+  var objects = [];
+  var jString = '{\n';
+  for(var i=0;i<fields.length;i++){
+    jString += '"' + fields[i].getAttribute("name") + '" : "' + fields[i].value + '",\n';
+  }
+  jString = jString.substring(0,jString.length - 2);
+  jString += '\n}';
+  fs.writeFileSync('config.json',jString);
+  ipcRenderer.send('console',jString)
+  switchState("default")
 }
 function toggleMusic(){
   ipcRenderer.send("toggleMusic");

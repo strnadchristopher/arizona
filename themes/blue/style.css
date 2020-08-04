@@ -89,6 +89,8 @@ body{
 video{
 	width:125%;
 	height:125%;
+	width:auto;
+	height:auto;
 	position:absolute;
 	z-index:-1;
 }
@@ -144,7 +146,23 @@ video{
 }
 #inputField:focus{
 	outline:none;
+	background:none;
 }
+#configMenu{
+	width:100%;
+	height:100%;
+	display:none;
+	justify-content: center;
+	align-items: center;
+}
+.configItem{
+	margin:auto;
+	height:100%;
+}
+.configInput{
+	outline:none;
+}
+
 @-webkit-keyframes MoveUpDown {
   0%, 100% {
     transform: translate(0,0);

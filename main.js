@@ -131,6 +131,8 @@ function createWindow () {
   win.webContents.openDevTools()})
   globalShortcut.register('f3', function() {getArtwork();})
   globalShortcut.register('f2', function() {skipTrack();})
+  globalShortcut.register('Ctrl+r', function() {win.webContents.send("switchState","configMenu");})
+  //win.webContents.send("switchState","default");
   win.loadFile('index.html')
   // Open the DevTools.
   loaded = true;
@@ -352,19 +354,21 @@ async function getTrackInfo(){
     }
     console.log(`statusCode: ${res.statusCode}`)
     if(body != void(0)){
-      //console.log(body["item"]["name"])
-      artist = body["item"]["artists"][0]["name"];
-      trackName = body["item"]["name"]
-      album = body["item"]["album"]["name"]
-      albumArtURL  = body["item"]["album"]["images"][0]["url"]
-      cTime = body["progess_ms"];
-      duration = body["item"]["duration_ms"];
-      isPlaying = body["is_playing"];
-      //console.log(duration + " " + cTime)
-      win.webContents.send('trackInfo', artist + ";" + trackName + ";" + album);
-      //console.log(albumArtURL)
-      win.webContents.send('artwork', albumArtURL)
-      shouldUpdateTrack = false;
+      if(body["item"] != void(0)){
+        //console.log(body["item"]["name"])
+        artist = body["item"]["artists"][0]["name"];
+        trackName = body["item"]["name"]
+        album = body["item"]["album"]["name"]
+        albumArtURL  = body["item"]["album"]["images"][0]["url"]
+        cTime = body["progess_ms"];
+        duration = body["item"]["duration_ms"];
+        isPlaying = body["is_playing"];
+        //console.log(duration + " " + cTime)
+        win.webContents.send('trackInfo', artist + ";" + trackName + ";" + album);
+        //console.log(albumArtURL)
+        win.webContents.send('artwork', albumArtURL)
+        shouldUpdateTrack = false;
+      }
     }else{
       win.webContents.send('statusUpdate','No song playing');
     }
@@ -500,7 +504,7 @@ ipcMain.on('synchronous-message', (event, arg) => {
   event.returnValue = 'Sync return';
 })
 ipcMain.on('switchSize', (event, arg) => {
-  if(state == "default"){
+  if(arg == "miniPlayer"){
     console.log("Switching to miniplayer: " + cusW + ", " + cusH)
     //win.setSize(cusW, cusH - 300)
     updateWindowPosition(cusW, cusH - 300)
@@ -510,7 +514,7 @@ ipcMain.on('switchSize', (event, arg) => {
       win.webContents.send("showOutput");
     }
     state = "miniPlayer";
-  }else{
+  }else if(arg == "default"){
     console.log("Switching to default: " + cusW + ", " + cusH)
     //win.setSize(cusW, cusW)
     updateWindowPosition(cusW, cusH)
@@ -529,7 +533,7 @@ ipcMain.on('nextSong', (event, arg) => {
   }
 })
 ipcMain.on('console', (event, arg) => {
-  console.log(arg)
+  console.log("Renderer: " + arg)
 })
 ipcMain.on('toggleMusic', (event, arg) => { //Check playback state then change it
   if(spotifyAuthSuccess){

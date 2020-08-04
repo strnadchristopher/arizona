@@ -1,0 +1,13 @@
+{
+    "theme" : "blue",
+    "username": "Chris",
+    "assistantName": "Arizona",
+    "assistantShortcut": "ctrl+q",
+    "windowWidth": "450",
+    "windowHeight": "500",
+    "secondScreen": "true",
+    "backgroundVideo": "true",
+    "useSpotify": "false",
+    "spotifyMiniPlayer": "true",
+    "showTitleOnMiniPlayer": "false"
+}
