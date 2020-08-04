@@ -115,7 +115,7 @@ function switchState(state){
           mainWindow.style.display = "flex";
           ipcRenderer.send("switchSize");
           break;
-        case states[1]:
+        case states[1]: // Miniplayer state
           currentState = state;
           textBox.style.height = "0px";
           mainWindow.style.height = "20%";
@@ -123,8 +123,11 @@ function switchState(state){
           bgVideo.style.height = "auto";
           ipcRenderer.send("switchSize")
           break;
-        case states[2]:
+        case states[2]: // Config
           currentState = state;
+          textBox.style.height = "0px";
+          mainWindow.style.height = "100%";
+          bgVideo.style.display = "none";
           break;
         default:
           currentState = states[0];

@@ -31,11 +31,13 @@ function loadConfig(){
   assistantShortcut = initConfig["assistantShortcut"]
   cusW = initConfig["windowWidth"];
   cusH = initConfig["windowHeight"];
+  cusW = parseInt(cusW);
+  cusH = parseInt(cusH);
   secondScreen = (initConfig["secondScreen"] === 'true');
   useSpotify = (initConfig["useSpotify"] === 'true');
   spotifyMiniPlayer = (initConfig["spotifyMiniPlayer"]==='true');
   showTitleOnMiniPlayer = (initConfig["showTitleOnMiniPlayer"]==='true');
-  updateWindowPosition(parseInt(cusW),parseInt(cusH));
+  updateWindowPosition(cusW,cusH);
 }
 
 function updateWindowPosition(w,h){
@@ -62,8 +64,6 @@ var serviceScript = path.join(__dirname, 'extraResources','service.js');
 //Window stuff
 var screenWidth;
 var screenHeight;
-var windowWidth = parseInt(cusW);
-var windowHeight = parseInt(cusH);
 const xOffset = 15;
 var winX;
 var winY;
@@ -71,12 +71,12 @@ function createWindow () {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize
   screenWidth = width;
   screenHeight = height;
-  winX = width - windowWidth - xOffset;
-  winY = height - windowHeight;
+  winX = width - cusW - xOffset;
+  winY = height - cusH;
   // Create the browser window.
   win = new BrowserWindow({
-    width: windowWidth,
-    height: windowHeight,
+    width: cusW,
+    height: cusH,
 	transparent: true,
 	frame: false,
 	x:winX,
@@ -223,6 +223,33 @@ function spotifyAuth(){
   },5000)
 }
 
+function refreshToken(){
+  request.post('https://accounts.spotify.com/api/token', {
+    form: {
+      "grant_type": "refresh_token",
+      "code": rToken,
+      "redirect_uri": "https://github.com/"
+    },
+    headers: {'Authorization': "Basic ZWIwOTI5YzE5MDM1NGQ3ZWEwYjdlOGEwNjVhZDY4ZWQ6OWQ4NTRhMzY3OThhNGNlODljOTRiNmFlOWFlYjdmOTA="
+  },
+  json: true
+  }, (error, res, body) => {
+    if (error) {
+      console.error(error)
+      spotifyAuth();
+      return
+    }
+    //console.log(`statusCode: ${res.statusCode}`)
+    aToken = body["access_token"]
+    rToken = body["refresh_token"]
+    spotifyAuthSuccess = true;
+    console.log("Authorization successful")
+    getTrackInfo();
+    //console.log(body)
+    //console.log("Access Token: " + body["access_token"]) //Access TOKEN goodies
+  })
+}
+
 function pauseTrack(){
   console.log("Pausing Track");
   request.put('https://api.spotify.com/v1/me/player/pause', {
@@ -311,6 +338,7 @@ function playTrack(songName){
     }
   })
 }
+
 var t=setInterval(checkSpotifyArt,15000);
 async function getTrackInfo(){
   request.get('https://api.spotify.com/v1/me/player/currently-playing', {
@@ -319,6 +347,7 @@ async function getTrackInfo(){
   }, (error, res, body) => {
     if (error) {
       console.error(error)
+      refreshToken();
       return
     }
     console.log(`statusCode: ${res.statusCode}`)
@@ -384,7 +413,7 @@ function readAnswers(message){ // Handle messages from service
     if(spotifyAuthSuccess){
         skipTrack();
     }else{
-      win.webContents.send('statusUpdate','!Link your Spotify account to control your music!')
+      win.webContents.send('statusUpdate','!Link your Spotify account to control your music')
     }
   }else if(message.startsWith("previous")){
     if(spotifyAuthSuccess){
@@ -472,17 +501,9 @@ ipcMain.on('synchronous-message', (event, arg) => {
 })
 ipcMain.on('switchSize', (event, arg) => {
   if(state == "default"){
-    windowWidth = 450;
-    windowHeight = 200;
-    console.log("Switching to miniplayer: " + windowWidth + ", " + windowHeight)
-    win.setSize(windowWidth, windowHeight)
-    winX = screenWidth - windowWidth - 15;
-    winY = screenHeight - windowHeight;
-    if(secondScreen){
-      winX = (screenWidth * 2) - windowWidth - xOffset;
-      console.log(winX,winY)
-    }
-    win.setPosition(winX, winY - 200)
+    console.log("Switching to miniplayer: " + cusW + ", " + cusH)
+    //win.setSize(cusW, cusH - 300)
+    updateWindowPosition(cusW, cusH - 300)
     if(!showTitleOnMiniPlayer){
       win.webContents.send("hideOutput");
     }else{
@@ -490,17 +511,9 @@ ipcMain.on('switchSize', (event, arg) => {
     }
     state = "miniPlayer";
   }else{
-    windowWidth = 450;
-    windowHeight = 500;
-    console.log("Switching to default: " + windowWidth + ", " + windowHeight)
-    win.setSize(windowWidth, windowHeight)
-    winX = screenWidth - windowWidth - 15;
-    winY = screenHeight - windowHeight;
-    if(secondScreen){
-      winX = (screenWidth * 2) - windowWidth - xOffset;
-      console.log(winX,winY)
-    }
-    win.setPosition(winX, winY)
+    console.log("Switching to default: " + cusW + ", " + cusH)
+    //win.setSize(cusW, cusW)
+    updateWindowPosition(cusW, cusH)
     win.webContents.send("showOutput");
     state = "default";
   }
