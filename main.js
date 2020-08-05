@@ -45,14 +45,16 @@ function updateWindowPosition(w,h){
   let externalDisplay = displays.find((display) => {
     return display.bounds.x !== 0 || display.bounds.y !== 0
   })
+  console.log(w + " " + h)
+  win.setResizable(true);
   win.setSize(w,h);
+  win.setResizable(false);
   var { width, height } = screen.getPrimaryDisplay().workAreaSize
   const xOffset = 15;
   var winX = width - w - xOffset;
   var winY = height - h;
   if(secondScreen && externalDisplay){
     winX = (width * 2) - w - xOffset;
-    console.log(winX,winY)
   }
   win.setPosition(winX,winY);
 }
@@ -132,6 +134,7 @@ function createWindow () {
   globalShortcut.register('f3', function() {getArtwork();})
   globalShortcut.register('f2', function() {skipTrack();})
   globalShortcut.register('Ctrl+r', function() {win.webContents.send("switchState","configMenu");})
+  globalShortcut.register('Ctrl+f5', function() {win.reload();})
   //win.webContents.send("switchState","default");
   win.loadFile('index.html')
   // Open the DevTools.
@@ -156,37 +159,8 @@ var accessCode;
 var aToken, rToken;
 var spotifyAuthSuccess = false;
 var artist, trackName, album, albumArtURL, cTime, duration, isPlaying;
-function getTokens(){
-  fs.readFile("spotifyAuth.txt", "utf8", function(err, data) {
-    //console.log("Spotify auth found: " + data);
-    accessCode = data;
-    request.post('https://accounts.spotify.com/api/token', {
-      form: {
-        "grant_type": "authorization_code",
-        "code": accessCode,
-        "redirect_uri": "https://github.com/"
-      },
-      headers: {'Authorization': "Basic ZWIwOTI5YzE5MDM1NGQ3ZWEwYjdlOGEwNjVhZDY4ZWQ6OWQ4NTRhMzY3OThhNGNlODljOTRiNmFlOWFlYjdmOTA="
-    },
-    json: true
-    }, (error, res, body) => {
-      if (error) {
-        console.error(error)
-        spotifyAuth();
-        return
-      }
-      //console.log(`statusCode: ${res.statusCode}`)
-      aToken = body["access_token"]
-      rToken = body["refresh_token"]
-      spotifyAuthSuccess = true;
-      console.log("Authorization successful")
-      getTrackInfo();
-      //console.log(body)
-      //console.log("Access Token: " + body["access_token"]) //Access TOKEN goodies
-    })
-  });
-}
 
+//Beginning of Spotify Auth Process, Opens a window to get approval
 function spotifyAuth(){
   authWindow = new BrowserWindow({
     width: 500,
@@ -212,20 +186,56 @@ function spotifyAuth(){
   var i = setInterval(function(){
     var newURL = authWindow.webContents.getURL();
     if(!newURL.includes("spotify")){ //If auth is done
-      clearInterval(i)
-      accessCode = newURL.split("?")[1].substring(5)
-      fs.writeFile('spotifyAuth.txt', accessCode, function(err){
-        if (err) return console.log(err);
-        authWindow.close()
-        getTokens();
-      });
+      if(newURL.split("?")[1] != void(0)){
+        clearInterval(i)
+        accessCode = newURL.split("?")[1].substring(5)
+        fs.writeFile('spotifyAuth.txt', accessCode, function(err){
+          if (err) return console.log(err);
+          authWindow.close()
+          getTokens();
+        });
+      }
     }else{
       authWindow.show();
     }
   },5000)
 }
-
+//Get The Initial set of tokens, access and refreshToken
+function getTokens(){
+  console.log("Getting inital access token and refresh token");
+  fs.readFile("spotifyAuth.txt", "utf8", function(err, data) {
+    //console.log("Spotify auth found: " + data);
+    accessCode = data;
+    request.post('https://accounts.spotify.com/api/token', {
+      form: {
+        "grant_type": "authorization_code",
+        "code": accessCode,
+        "redirect_uri": "https://github.com/"
+      },
+      headers: {'Authorization': "Basic ZWIwOTI5YzE5MDM1NGQ3ZWEwYjdlOGEwNjVhZDY4ZWQ6OWQ4NTRhMzY3OThhNGNlODljOTRiNmFlOWFlYjdmOTA="
+    },
+    json: true
+    }, (error, res, body) => {
+      if (error) {
+        console.log("Failed to get inital tokens.")
+        win.webContents.send('statusUpdate', 'Failed to authorize Spotify. Please try again.')
+        console.error(error)
+        spotifyAuth();
+        return
+      }
+      aToken = body["access_token"]
+      rToken = body["refresh_token"]
+      spotifyAuthSuccess = true;
+      //win.webContents.send('statusUpdate', '')
+      console.log("Authorization successful")
+      var t=setInterval(checkSpotifyArt,15000);
+      checkSpotifyArt();
+    })
+  });
+}
+//Refresh the token if it's expired
 function refreshToken(){
+  console.log("Getting refresh token")
   request.post('https://accounts.spotify.com/api/token', {
     form: {
       "grant_type": "refresh_token",
@@ -237,21 +247,19 @@ function refreshToken(){
   json: true
   }, (error, res, body) => {
     if (error) {
+      console.log("Failed to refresh token");
       console.error(error)
       spotifyAuth();
       return
     }
-    //console.log(`statusCode: ${res.statusCode}`)
     aToken = body["access_token"]
     rToken = body["refresh_token"]
     spotifyAuthSuccess = true;
     console.log("Authorization successful")
     getTrackInfo();
-    //console.log(body)
-    //console.log("Access Token: " + body["access_token"]) //Access TOKEN goodies
   })
 }
-
+//Various spotify control functions
 function pauseTrack(){
   console.log("Pausing Track");
   request.put('https://api.spotify.com/v1/me/player/pause', {
@@ -341,14 +349,14 @@ function playTrack(songName){
   })
 }
 
-var t=setInterval(checkSpotifyArt,15000);
 async function getTrackInfo(){
   request.get('https://api.spotify.com/v1/me/player/currently-playing', {
     headers: {'Authorization': "Bearer " + aToken},
   json: true
   }, (error, res, body) => {
     if (error) {
-      console.error(error)
+      console.log("Failed to get track info")
+      //console.error(error)
       refreshToken();
       return
     }
@@ -365,6 +373,11 @@ async function getTrackInfo(){
         isPlaying = body["is_playing"];
         //console.log(duration + " " + cTime)
         win.webContents.send('trackInfo', artist + ";" + trackName + ";" + album);
+        if(!win.isEnabled() && spotifyMiniPlayer)
+        {
+          win.show();
+          win.webContents.send("switchState","miniPlayer");
+        }
         //console.log(albumArtURL)
         win.webContents.send('artwork', albumArtURL)
         shouldUpdateTrack = false;
@@ -417,20 +430,20 @@ function readAnswers(message){ // Handle messages from service
     if(spotifyAuthSuccess){
         skipTrack();
     }else{
-      win.webContents.send('statusUpdate','!Link your Spotify account to control your music')
+      win.webContents.send('statusUpdate','Link your Spotify account to control your music')
     }
   }else if(message.startsWith("previous")){
     if(spotifyAuthSuccess){
       previousTrack();
     }else{
-      win.webContents.send('statusUpdate','!Link your Spotify account to control your music!')
+      win.webContents.send('statusUpdate','Link your Spotify account to control your music!')
     }
   }else if(message.startsWith("play")){
     if(spotifyAuthSuccess){
       message = message.substring(5);
       playTrack(message);
     }else{
-      win.webContents.send('statusUpdate','!Link your Spotify account to control your music!')
+      win.webContents.send('statusUpdate','Link your Spotify account to control your music!')
     }
   }else{
     console.log(message);
@@ -481,14 +494,10 @@ function runService(workerData) {
   );
 }
 
-function showNotification(notif){
-  //win.webContents.send('notification', notif);
-}
 
 async function run() {
   const result = runService({currentInput,inputs,responses});
 }
-
 
 const { ipcMain } = require('electron')
 ipcMain.on('asynchronous-query', (event, arg) => { //When an input is given
@@ -503,24 +512,14 @@ ipcMain.on('synchronous-message', (event, arg) => {
   console.log(arg) // prints "ping"
   event.returnValue = 'Sync return';
 })
-ipcMain.on('switchSize', (event, arg) => {
-  if(arg == "miniPlayer"){
-    console.log("Switching to miniplayer: " + cusW + ", " + cusH)
-    //win.setSize(cusW, cusH - 300)
-    updateWindowPosition(cusW, cusH - 300)
-    if(!showTitleOnMiniPlayer){
-      win.webContents.send("hideOutput");
-    }else{
-      win.webContents.send("showOutput");
+ipcMain.on('updateState', (event, arg) => {
+    state = arg;
+    console.log(state)
+    if(state == "default"){
+      updateWindowPosition(cusW, cusH)
+    }else if(state == "miniplayer"){
+      updateWindowPosition(cusW, cusH - 250)
     }
-    state = "miniPlayer";
-  }else if(arg == "default"){
-    console.log("Switching to default: " + cusW + ", " + cusH)
-    //win.setSize(cusW, cusW)
-    updateWindowPosition(cusW, cusH)
-    win.webContents.send("showOutput");
-    state = "default";
-  }
 })
 ipcMain.on('previousSong', (event, arg) => {
   if(spotifyAuthSuccess){

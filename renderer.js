@@ -7,17 +7,14 @@ const node = document.querySelector(element);
 node.classList.add(`${prefix}animated`, animationName);
 
 var currentTrackTitle, currentTrackArtist, isPlaying = false;
-var notifShowing = false;
 var mainWindow = document.getElementById('mainWindow');
 var textBox = document.getElementById('textBox');
 var bgVideo = document.getElementById("bgVideo");
-var notif = document.getElementById("notification");
-var forceOutput = false;
+
 // When the animation ends, we clean the classes and resolve the Promise
 function handleAnimationEnd() {
   node.classList.remove(`${prefix}animated`, animationName);
   node.removeEventListener('animationend', handleAnimationEnd);
-
   resolve('Animation ended');
 }
 node.addEventListener('animationend', handleAnimationEnd);
@@ -33,29 +30,21 @@ ipcRenderer.on('asynchronous-reply', (event, arg) => {
   animateCSS("#output", 'bounce');
 })
 ipcRenderer.on('statusUpdate', function(event, data){ //On New message
-  forceOutput = true;
   console.log(data);
   mainWindow.classList.remove("showingLyrics");
   showingLyrics = false;
   output.innerHTML = data;
-  setTimeout(function(){
-      forceOutput = false;
-  }, 10000)
 })
 ipcRenderer.on('artwork', function(event, data){
   mainWindow.style.backgroundImage = "url('" + data + "')";
   mainWindow.classList.remove('colorBackground');
   mainWindow.classList.add('albumBackground');
   bgVideo.style.display = "none";
-  //output.innerHTML = "Now playing: " + data + " by " + data;
 })
 ipcRenderer.on('trackInfo', function(event, data){
-  var notifText = document.getElementById("notifText");
   currentTrackTitle = data.split(";")[1];
   currentTrackArtist = data.split(";")[0];
-  if(!forceOutput){
-    output.innerHTML = currentTrackTitle + " by " + currentTrackArtist;
-  }
+  output.innerHTML = currentTrackTitle + " by " + currentTrackArtist;
 })
 var showingLyrics = false;
 ipcRenderer.on('lyrics', function(event, data){
@@ -64,19 +53,6 @@ ipcRenderer.on('lyrics', function(event, data){
   var mainWindow = document.getElementById('mainWindow');
   mainWindow.classList.add("showingLyrics")
   showingLyrics = true;
-})
-ipcRenderer.on('notification', function(event, data){
-  console.log(data);
-  var notif = document.getElementById("notification");
-  var notifText = document.getElementById("notifText");
-  notifText.innerHTML = data;
-    notif.style.visibility = "hidden";
-    notifShowing = true;
-    //animateCSS("#notification", "slideInUp");
-    setTimeout(function(){
-      notif.style.visibility = "hidden";
-      notifShowing = false;
-    }, 5000)
 })
 var miniMode = false;
 ipcRenderer.on('miniPlayer', function(event, data){
@@ -100,35 +76,40 @@ function switchState(state){
     console.log(state)
     switch(state){
         case states[0]: //Default state
-          mainWindow.style.display = "none";
-          animateCSS("#body","slideInUp")
+          //mainWindow.style.display = "none";
+          //animateCSS("#body","slideInUp")
           currentState = state;
+          textBox.style.display = "flex";
           textBox.style.height = "25%";
           mainWindow.style.height = "75%";
+          mainWindow.style.marginTop = "50px";
           bgVideo.style.width = "auto";
           bgVideo.style.height = "auto";
           inputField.click();
-          mainWindow.style.display = "flex";
           output.style.display = "block";
-          ipcRenderer.send("switchSize");
           configMenu.style.display = "none";
+          ipcRenderer.send("updateState", "default");
           break;
         case states[1]: // Miniplayer state
           currentState = state;
           textBox.style.height = "0px";
-          mainWindow.style.height = "20%";
+          textBox.style.display = "none";
+          mainWindow.style.height = "80%";
+          mainWindow.style.marginTop = "auto";
+          mainWindow.style.marginBottom = "0"
           bgVideo.style.width = "auto";
           bgVideo.style.height = "auto";
-          ipcRenderer.send("switchSize")
+          ipcRenderer.send("updateState", "miniplayer");
           break;
         case states[2]: // Config
           currentState = state;
           textBox.style.height = "0px";
-          mainWindow.style.height = "100%";
-          //bgVideo.style.display = "none";
+          mainWindow.style.height = "90%";
           output.style.display = "none";
           configMenu.style.display = "flex";
-          document.getElementById("miniPlayerControls").style.display = "none";
+          if(spotControls != null){
+            spotControls.style.display = "none";
+          }
           populateConfigMenu();
           break;
         default:
