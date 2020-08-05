@@ -41,6 +41,10 @@ function loadConfig(){
 }
 
 function updateWindowPosition(w,h){
+  if(!appShowing){
+    win.show();
+    appShowing = true;
+  }
   let displays = screen.getAllDisplays()
   let externalDisplay = displays.find((display) => {
     return display.bounds.x !== 0 || display.bounds.y !== 0
@@ -69,6 +73,7 @@ var screenHeight;
 const xOffset = 15;
 var winX;
 var winY;
+var appShowing = false;
 function createWindow () {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize
   screenWidth = width;
@@ -96,6 +101,7 @@ function createWindow () {
   });
   win.on('blur', function(event){
     if(!spotifyMiniPlayer || !spotifyAuthSuccess){
+      appShowing = false;
       win.webContents.send('slideOut')
       setTimeout(function(){
         win.hide();
@@ -123,6 +129,7 @@ function createWindow () {
     console.log('Bringing back app')
     if(state == "default"){
       win.show();
+      appShowing = true;
     }else{
       console.log("switching state to default")
       win.webContents.send("switchState","default");
@@ -137,6 +144,7 @@ function createWindow () {
   globalShortcut.register('Ctrl+f5', function() {win.reload();})
   //win.webContents.send("switchState","default");
   win.loadFile('index.html')
+  appShowing = true;
   // Open the DevTools.
   loaded = true;
   if(useSpotify){
@@ -358,12 +366,11 @@ async function getTrackInfo(){
       console.log("Failed to get track info")
       //console.error(error)
       refreshToken();
-      return
+      return false;
     }
     console.log(`statusCode: ${res.statusCode}`)
     if(body != void(0)){
       if(body["item"] != void(0)){
-        //console.log(body["item"]["name"])
         artist = body["item"]["artists"][0]["name"];
         trackName = body["item"]["name"]
         album = body["item"]["album"]["name"]
@@ -371,14 +378,11 @@ async function getTrackInfo(){
         cTime = body["progess_ms"];
         duration = body["item"]["duration_ms"];
         isPlaying = body["is_playing"];
-        //console.log(duration + " " + cTime)
         win.webContents.send('trackInfo', artist + ";" + trackName + ";" + album);
-        if(!win.isEnabled() && spotifyMiniPlayer)
+        if(!appShowing && spotifyMiniPlayer)
         {
-          win.show();
           win.webContents.send("switchState","miniPlayer");
         }
-        //console.log(albumArtURL)
         win.webContents.send('artwork', albumArtURL)
         shouldUpdateTrack = false;
       }
@@ -391,7 +395,7 @@ async function getTrackInfo(){
 var artworkURL;
 var shouldUpdateTrack = true;
 function checkSpotifyArt(){
-  if(win.isVisible() && spotifyAuthSuccess){
+  if(spotifyAuthSuccess){
     console.log("Checking for song change.")
     getTrackInfo();
   }else{
@@ -516,9 +520,9 @@ ipcMain.on('updateState', (event, arg) => {
     state = arg;
     console.log(state)
     if(state == "default"){
-      updateWindowPosition(cusW, cusH)
+      updateWindowPosition(cusW, cusH);
     }else if(state == "miniplayer"){
-      updateWindowPosition(cusW, cusH - 250)
+      updateWindowPosition(cusW, cusH - 250);
     }
 })
 ipcMain.on('previousSong', (event, arg) => {

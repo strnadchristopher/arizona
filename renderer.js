@@ -76,8 +76,6 @@ function switchState(state){
     console.log(state)
     switch(state){
         case states[0]: //Default state
-          //mainWindow.style.display = "none";
-          //animateCSS("#body","slideInUp")
           currentState = state;
           textBox.style.display = "flex";
           textBox.style.height = "25%";
@@ -96,7 +94,8 @@ function switchState(state){
           textBox.style.display = "none";
           mainWindow.style.height = "80%";
           mainWindow.style.marginTop = "auto";
-          mainWindow.style.marginBottom = "0"
+          mainWindow.style.marginBottom = "0";
+          configMenu.style.display = "none";
           bgVideo.style.width = "auto";
           bgVideo.style.height = "auto";
           ipcRenderer.send("updateState", "miniplayer");
@@ -110,6 +109,7 @@ function switchState(state){
           if(spotControls != null){
             spotControls.style.display = "none";
           }
+          ipcRenderer.send("updateSize", "default");
           populateConfigMenu();
           break;
         default:
