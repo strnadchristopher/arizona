@@ -11,6 +11,7 @@ var mainWindow = document.getElementById('mainWindow');
 var textBox = document.getElementById('textBox');
 var bgVideo = document.getElementById("bgVideo");
 
+
 // When the animation ends, we clean the classes and resolve the Promise
 function handleAnimationEnd() {
   node.classList.remove(`${prefix}animated`, animationName);
@@ -81,8 +82,8 @@ function switchState(state){
           textBox.style.height = "25%";
           mainWindow.style.height = "75%";
           mainWindow.style.marginTop = "50px";
-          bgVideo.style.width = "auto";
-          bgVideo.style.height = "auto";
+          bgVideo.style.width = "125%";
+          bgVideo.style.height = "125%";
           inputField.click();
           output.style.display = "block";
           configMenu.style.display = "none";
@@ -109,7 +110,7 @@ function switchState(state){
           if(spotControls != null){
             spotControls.style.display = "none";
           }
-          ipcRenderer.send("updateSize", "default");
+          ipcRenderer.send("updateState", "default");
           populateConfigMenu();
           break;
         default:
@@ -195,15 +196,13 @@ ipcRenderer.on("hideControls", function(event, data){
   spotControls.parentNode.removeChild(spotControls);
 })
 ipcRenderer.on('updatePlaybackState', function(event, data){
-  var button = document.getElementById("playbackButton");
+  var button = document.getElementById("toggleButton");
   if(data == true){
     isPlaying = data;
-    button.classList.remove("fa-pause");
-    button.classList.add("fa-play-circle")
+    button.src = "play.png";
   }else{
     isPlaying = data;
-    button.classList.add("fa-pause");
-    button.classList.remove("fa-play-circle")
+    button.src = "pause.png";
   }
 })
 window.addEventListener("keyup", sendQuery, true);

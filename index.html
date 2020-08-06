@@ -25,19 +25,18 @@
      </script>
      <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.0/animate.css">
      <script src="node_modules/@fortawesome/fontawesome-free/js/all.js" crossorigin="anonymous"></script>
-
+     <!--Icons made by <a href="https://www.flaticon.com/authors/pixel-perfect" title="Pixel perfect">Pixel perfect</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>-->
   </head>
   <body id='body'>
-    <!--<script src="https://sdk.scdn.co/spotify-player.js"></script>-->
     <div id="textBox" class="section"><input class="inputField" id="inputField" type='text' onclick="this.select()"></div>
     <div id="mainWindow" class="section colorBackground">
       <div id="configMenu">
         <form id='configForm'></form>
       </div>
       <div id='miniPlayerControls'>
-        <i onclick="previousTrack()" id="backButton" class="fas fa-backward fa-3x"></i>
-        <i id="playbackButton" onclick="toggleMusic()" class="fas fa-pause fa-3x"></i>
-        <i onclick="nextTrack()" class="fas fa-forward fa-3x"></i>
+        <img onclick="previousTrack()" id="backButton" class="mediaButton" src="forward.png"/>
+        <img onclick="toggleMusic()" id="toggleButton" class="mediaButton" src="pause.png"/>
+        <img onclick="nextTrack()" class="mediaButton" src="forward.png"/>
       </div>
     <script>
     if(bgVid){document.write('<video id="bgVideo" loop autoplay><source src="themes/' + parsedData["theme"] + '/bg.mp4" type="video/mp4"></video>')}</script><h1 id="output" class="">Howdy!</h1><br/></div>

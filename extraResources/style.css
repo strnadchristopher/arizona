@@ -47,6 +47,7 @@ body{
 	opacity: 1;
 }
 .section{
+	//cursor:pointer;
 	display:flex;
 	margin:auto;
 	width:90%;
@@ -65,23 +66,14 @@ body{
 	align-items: center;
 	color:white;
 	position:absolute;
-	z-index:5;
+	z-index:0;
 	opacity: 0;
 	transition-duration: 250ms;
 }
-.mediaButton{
-	width:auto;
-	height:30px;
-	margin:auto;
-	cursor:pointer;
-	display:flex;
-	justify-content: center;
-	align-items: center;
-	filter: brightness(0) invert(1);
-}
-#backButton{
-	-webkit-transform: scaleX(-1);
-  transform: scaleX(-1);
+.svg-inline--fa{
+	font-size:30px !important;
+	position: relative;
+	z-index: 1;
 }
 #textBox{
 	background:rgba(0,0,0,.5);
@@ -107,6 +99,19 @@ video{
 	height:80%;
 	margin-top:50px;
 	box-shadow: 0 15px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+svg{
+	pointer-events: none;
+}
+.mediaButton{
+	width:100%;
+	height:100%;
+	cursor:pointer;
+	position: relative;
+	z-index: 2;
+	display:flex;
+	justify-content: center;
+	align-items: center;
 }
 .miniPlayerMode{
 	margin-top:auto;

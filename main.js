@@ -139,7 +139,7 @@ function createWindow () {
 	globalShortcut.register('f7', function() {console.log('Showing console')
   win.webContents.openDevTools()})
   globalShortcut.register('f3', function() {getArtwork();})
-  globalShortcut.register('f2', function() {skipTrack();})
+  //globalShortcut.register('f2', function() {skipTrack();})
   globalShortcut.register('Ctrl+r', function() {win.webContents.send("switchState","configMenu");})
   globalShortcut.register('Ctrl+f5', function() {win.reload();})
   //win.webContents.send("switchState","default");
@@ -298,6 +298,7 @@ function resumeTrack(){
 }
 
 function skipTrack(){
+  console.log("Playing next song")
   request.post('https://api.spotify.com/v1/me/player/next', {
     headers: {'Authorization': "Bearer " + aToken},
   json: true
@@ -312,6 +313,7 @@ function skipTrack(){
 }
 
 function previousTrack(){
+  console.log("Playing previous song");
   request.post('https://api.spotify.com/v1/me/player/previous', {
     headers: {'Authorization': "Bearer " + aToken},
   json: true
