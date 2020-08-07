@@ -88,6 +88,9 @@ function switchState(state){
           output.style.display = "block";
           configMenu.style.display = "none";
           ipcRenderer.send("updateState", "default");
+          if(spotControls != null){
+            spotControls.style.display = "flex";
+          }
           break;
         case states[1]: // Miniplayer state
           currentState = state;
@@ -100,6 +103,9 @@ function switchState(state){
           bgVideo.style.width = "auto";
           bgVideo.style.height = "auto";
           ipcRenderer.send("updateState", "miniplayer");
+          if(spotControls != null){
+            spotControls.style.display = "flex";
+          }
           break;
         case states[2]: // Config
           currentState = state;
@@ -107,6 +113,8 @@ function switchState(state){
           mainWindow.style.height = "90%";
           output.style.display = "none";
           configMenu.style.display = "flex";
+          bgVideo.style.width = "auto";
+          bgVideo.style.height = "auto";
           if(spotControls != null){
             spotControls.style.display = "none";
           }

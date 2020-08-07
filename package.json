@@ -63,7 +63,7 @@
     "start": "electron .",
     "bundle-dependencies": "bundle-dependencies"
   },
-  "version": "0.0.11",
+  "version": "0.0.12",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.14.0",
     "@google-cloud/speech": "^4.1.1",

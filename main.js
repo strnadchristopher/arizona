@@ -22,7 +22,7 @@ fs.readFile('q&a/responses.txt', function (err, data) {
   responses = data.toString().split("\n");
   //console.log("Asynchronous read: " + data.toString());
 });
-var username, assistantName, assistantShortcut, theme, cusW, cusH, secondScreen, useSpotify, spotifyMiniPlayer, showTitleOnMiniPlayer;
+var username, assistantName, assistantShortcut, theme, cusW, cusH, secondScreen, useSpotify, spotifyMiniPlayer, showTitleOnMiniPlayer, alwaysOnTop;
 //READ Config
 function loadConfig(){
   var initConfig = readConfig();
@@ -37,6 +37,8 @@ function loadConfig(){
   useSpotify = (initConfig["useSpotify"] === 'true');
   spotifyMiniPlayer = (initConfig["spotifyMiniPlayer"]==='true');
   showTitleOnMiniPlayer = (initConfig["showTitleOnMiniPlayer"]==='true');
+  alwaysOnTop = (initConfig["alwaysOnTop"]==='true');
+  win.setAlwaysOnTop(alwaysOnTop);
   updateWindowPosition(cusW,cusH);
 }
 

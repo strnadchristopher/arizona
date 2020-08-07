@@ -79,6 +79,15 @@ body{
 	align-items: center;
 	filter: brightness(0) invert(1);
 }
+#configButton{
+	width:30px;
+	height:30px;
+	position:absolute;
+	bottom:10px;
+	right:10px;
+	filter: brightness(0) invert(1);
+	cursor:pointer;
+}
 #backButton{
 	-webkit-transform: scaleX(-1);
   transform: scaleX(-1);
@@ -167,10 +176,13 @@ video{
 	display:none;
 	justify-content: center;
 	align-items: center;
+	background-color:rgba(0, 0, 0, 0.5);
 }
 .configItem{
-	margin:auto;
+	font-family: Poppins;
+	width:100%;
 	height:100%;
+	color:white;
 }
 .configInput{
 	outline:none;
@@ -179,7 +191,6 @@ video{
 @-webkit-keyframes MoveUpDown {
   0%, 100% {
     transform: translate(0,0);
-
   }
   50% {
     transform: translate(0,-20px);

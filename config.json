@@ -9,5 +9,6 @@
 "backgroundVideo" : "true",
 "useSpotify" : "true",
 "spotifyMiniPlayer" : "true",
-"showTitleOnMiniPlayer" : "false"
+"showTitleOnMiniPlayer" : "false",
+"alwaysOnTop" : "false"
 }
