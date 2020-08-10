@@ -10,5 +10,6 @@
 "useSpotify" : "true",
 "spotifyMiniPlayer" : "true",
 "showTitleOnMiniPlayer" : "false",
-"alwaysOnTop" : "false"
+"alwaysOnTop" : "false",
+"location" : "appleton"
 }

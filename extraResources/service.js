@@ -4,6 +4,7 @@ var execa = require("execa")
 const input = workerData['currentInput'];
 const inputs = workerData['inputs'];
 const responses = workerData['responses'];
+const locale = workerData['location'];
 var onMac = false;
 if (process.platform == 'darwin') {
   onMac = true;
@@ -23,7 +24,7 @@ function getAnswer(){
     weather.setAPPID("b6f1f93b7b842bdf437126921aad0521");
     weather.setUnits('imperial');
     // set city by name
-    weather.setCity('Houston');
+    weather.setCity(locale);
     weather.getDescription(function(err, desc){
       // get the Temperature
         weather.getTemperature(function(err, temp){

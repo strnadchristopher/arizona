@@ -112,7 +112,8 @@ function switchState(state){
           textBox.style.height = "0px";
           mainWindow.style.height = "90%";
           output.style.display = "none";
-          configMenu.style.display = "flex";
+          configMenu.style.display = "block";
+          configMenu.style.overflowY = "scroll";
           bgVideo.style.width = "auto";
           bgVideo.style.height = "auto";
           if(spotControls != null){

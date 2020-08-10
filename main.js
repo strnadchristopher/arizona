@@ -22,7 +22,7 @@ fs.readFile('q&a/responses.txt', function (err, data) {
   responses = data.toString().split("\n");
   //console.log("Asynchronous read: " + data.toString());
 });
-var username, assistantName, assistantShortcut, theme, cusW, cusH, secondScreen, useSpotify, spotifyMiniPlayer, showTitleOnMiniPlayer, alwaysOnTop;
+var location, username, assistantName, assistantShortcut, theme, cusW, cusH, secondScreen, useSpotify, spotifyMiniPlayer, showTitleOnMiniPlayer, alwaysOnTop;
 //READ Config
 function loadConfig(){
   var initConfig = readConfig();
@@ -39,6 +39,7 @@ function loadConfig(){
   showTitleOnMiniPlayer = (initConfig["showTitleOnMiniPlayer"]==='true');
   alwaysOnTop = (initConfig["alwaysOnTop"]==='true');
   win.setAlwaysOnTop(alwaysOnTop);
+  location = initConfig["location"]
   updateWindowPosition(cusW,cusH);
 }
 
@@ -102,7 +103,7 @@ function createWindow () {
       win.hide();
   });
   win.on('blur', function(event){
-    if(!spotifyMiniPlayer || !spotifyAuthSuccess){
+    if(!spotifyMiniPlayer || !spotifyAuthSuccess || !isPlaying){
       appShowing = false;
       win.webContents.send('slideOut')
       setTimeout(function(){
@@ -149,6 +150,20 @@ function createWindow () {
   appShowing = true;
   // Open the DevTools.
   loaded = true;
+  const { app, Menu, Tray } = require('electron')
+
+  let tray = null
+  tray = new Tray(iconpath)
+  const contextMenu = Menu.buildFromTemplate([{
+    label: 'Show',
+    click: function(){
+      win.show();
+    }
+  }
+  ])
+  tray.setToolTip('This is my application.')
+  tray.setContextMenu(contextMenu)
+
   if(useSpotify){
     spotifyAuth(); //Get access code
   }else{
@@ -399,8 +414,8 @@ async function getTrackInfo(){
 var artworkURL;
 var shouldUpdateTrack = true;
 function checkSpotifyArt(){
-  if(spotifyAuthSuccess){
-    console.log("Checking for song change.")
+  if(spotifyAuthSuccess && isPlaying && spotifyMiniPlayer){
+    console.log("Checking for song change.");
     getTrackInfo();
   }else{
     shouldUpdateTrack = true;
@@ -491,6 +506,7 @@ function readConfig(){
 const { Worker, isMainThread } = require("worker_threads");
 
 function runService(workerData) {
+  workerData["location"] = location;
   const worker = new Worker(serviceScript, { workerData });
   //worker.postMessage(workerData);
   worker.on("message", incoming => readAnswers(incoming));
