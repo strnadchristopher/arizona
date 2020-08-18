@@ -88,10 +88,6 @@ Every line in 'inputs.txt' corresponds to the same line in 'responses.txt'. Sepa
 
 * Voice Control and Response (considering using AWS)
 
-## Known Bugs
-* (macOS A) When window is re-opened from being hidden, a strange shadow appears behind the app that doesn't go away.
-* (All) Tray icons don't appear yet. App looks glitchy when changing states from miniplayer to default.
-
 ## Authors
 
 Christopher Strnad

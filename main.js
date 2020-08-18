@@ -67,7 +67,7 @@ function updateWindowPosition(w,h){
 }
 var loaded = false;
 var path = require('path')
-var iconpath = path.join(__dirname, 'extraResources', 'icon.png') // path of y
+var iconpath = path.join(__dirname, 'extraResources', 'iconTiny.png') // path of y
 var serviceScript = path.join(__dirname, 'extraResources','service.js');
 
 //Window stuff
