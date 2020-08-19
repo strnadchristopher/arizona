@@ -70,6 +70,8 @@
     "@google-cloud/text-to-speech": "^3.1.0",
     "animate.css": "^4.1.0",
     "aws-sdk": "^2.729.0",
+    "electron": "^9.2.1",
+    "electron-unhandled": "^3.0.2",
     "execa": "^4.0.3",
     "node-audiorecorder": "^2.2.0",
     "node-lyrics-api": "^1.0.1",
@@ -81,5 +83,8 @@
     "spotify-web-api-node": "^4.0.0",
     "string-similarity": "^4.0.1",
     "webrtc-adapter": "^7.6.4"
+  },
+  "devDependencies": {
+    "electron-packager": "^15.0.0"
   }
 }

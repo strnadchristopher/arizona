@@ -5,6 +5,10 @@ const fs = require("fs");
 var execa = require("execa");
 var currentInput;
 var win;
+const unhandled = require('electron-unhandled');
+var dirPath = app.getAppPath();
+
+unhandled();
 // Asynchronous read inputs and outputs
 var inputs;
 fs.readFile('q&a/inputs.txt', function (err, data) {
@@ -15,7 +19,7 @@ fs.readFile('q&a/inputs.txt', function (err, data) {
   //console.log("Asynchronous read: " + data.toString());
 });
 var responses;
-fs.readFile('q&a/responses.txt', function (err, data) {
+fs.readFile(dirPath + '/q&a/responses.txt', function (err, data) {
   if (err) {
     return console.error(err);
   }
@@ -495,8 +499,11 @@ app.on('activate', () => {
   //win.webContents.send('slideIn', "Do it");
 })
 
+
+
 function readConfig(){
-    let rawData = fs.readFileSync('config.json');
+  dirPath = app.getAppPath();
+    let rawData = fs.readFileSync(dirPath + '/config.json');
     console.log(rawData);
     let parsedData = JSON.parse(rawData);
     console.log(parsedData);
