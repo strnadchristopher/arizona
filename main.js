@@ -9,9 +9,11 @@ const unhandled = require('electron-unhandled');
 var dirPath = app.getAppPath();
 
 unhandled();
+// Enable live reload for Electron too
+require('electron-reload')(__dirname);
 // Asynchronous read inputs and outputs
 var inputs;
-fs.readFile('q&a/inputs.txt', function (err, data) {
+fs.readFile(dirPath + '/q&a/inputs.txt', function (err, data) {
   if (err) {
     return console.error(err);
   }
@@ -28,8 +30,9 @@ fs.readFile(dirPath + '/q&a/responses.txt', function (err, data) {
 });
 var location, username, assistantName, assistantShortcut, theme, cusW, cusH, secondScreen, useSpotify, spotifyMiniPlayer, showTitleOnMiniPlayer, alwaysOnTop;
 //READ Config
+var configLoad = require("./loadConfig.js");
 function loadConfig(){
-  var initConfig = readConfig();
+  var initConfig = configLoad.config();
   username = initConfig["username"];
   assistantName = initConfig["assistantName"]
   assistantShortcut = initConfig["assistantShortcut"]
@@ -162,14 +165,25 @@ function createWindow () {
     label: 'Show',
     click: function(){
       win.show();
+    }},
+    {label: 'Exit',
+    click: function(){
+      app.quit();
     }
   }
   ])
-  tray.setToolTip('This is my application.')
+  tray.setToolTip('Arizona')
   tray.setContextMenu(contextMenu)
 
   if(useSpotify){
-    spotifyAuth(); //Get access code
+    try {
+      if (fs.existsSync(__dirname + "/spotifyAuth.txt")) {
+        spotifyAuth();
+      }
+    } catch(err) {
+      console.error(err)
+    }
+    //spotifyAuth(); //Get access code
   }else{
     setTimeout(function(){win.webContents.send("hideControls");},3000);
   }
@@ -218,7 +232,7 @@ function spotifyAuth(){
       if(newURL.split("?")[1] != void(0)){
         clearInterval(i)
         accessCode = newURL.split("?")[1].substring(5)
-        fs.writeFile('spotifyAuth.txt', accessCode, function(err){
+        fs.writeFile(dirPath + '/spotifyAuth.txt', accessCode, function(err){
           if (err) return console.log(err);
           authWindow.close()
           getTokens();
@@ -232,7 +246,7 @@ function spotifyAuth(){
 //Get The Initial set of tokens, access and refreshToken
 function getTokens(){
   console.log("Getting inital access token and refresh token");
-  fs.readFile("spotifyAuth.txt", "utf8", function(err, data) {
+  fs.readFile(dirPath + "/spotifyAuth.txt", "utf8", function(err, data) {
     //console.log("Spotify auth found: " + data);
     accessCode = data;
     request.post('https://accounts.spotify.com/api/token', {
@@ -256,7 +270,7 @@ function getTokens(){
       rToken = body["refresh_token"]
       spotifyAuthSuccess = true;
       //win.webContents.send('statusUpdate', '')
-      console.log("Authorization successful")
+      console.log("Authorization successful");
       var t=setInterval(checkSpotifyArt,15000);
       checkSpotifyArt();
     })
@@ -435,7 +449,10 @@ async function getLyrics(trackData){
   win.webContents.send('lyrics',ourSong.content[0].lyrics)
 }
 
-app.whenReady().then(createWindow)
+app.whenReady().then(function(){
+  setTimeout(createWindow, 2000)
+}
+)
 
 var currentMessage;
 
@@ -499,19 +516,7 @@ app.on('activate', () => {
   //win.webContents.send('slideIn', "Do it");
 })
 
-
-
-function readConfig(){
-  dirPath = app.getAppPath();
-    let rawData = fs.readFileSync(dirPath + '/config.json');
-    console.log(rawData);
-    let parsedData = JSON.parse(rawData);
-    console.log(parsedData);
-    return parsedData;
-}
-
 const { Worker, isMainThread } = require("worker_threads");
-
 function runService(workerData) {
   workerData["location"] = location;
   const worker = new Worker(serviceScript, { workerData });
@@ -524,8 +529,6 @@ function runService(workerData) {
     console.log(`Worker stopped with exit code ${code}`)
   );
 }
-
-
 async function run() {
   const result = runService({currentInput,inputs,responses});
 }
@@ -595,4 +598,8 @@ ipcMain.on('toggleMusic', (event, arg) => { //Check playback state then change i
 })
 ipcMain.on('authMessage', (event, arg) => {
   console.log(arg) // prints "ping"
+})
+ipcMain.on('requestSpotifyAuth', (event, arg) => {
+  spotifyAuth();
+  console.log("Requesting Spotify Auth")
 })

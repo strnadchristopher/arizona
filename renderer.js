@@ -10,8 +10,6 @@ var currentTrackTitle, currentTrackArtist, isPlaying = false;
 var mainWindow = document.getElementById('mainWindow');
 var textBox = document.getElementById('textBox');
 var bgVideo = document.getElementById("bgVideo");
-
-
 // When the animation ends, we clean the classes and resolve the Promise
 function handleAnimationEnd() {
   node.classList.remove(`${prefix}animated`, animationName);
@@ -23,7 +21,7 @@ node.addEventListener('animationend', handleAnimationEnd);
 const output = document.getElementById("output");
 
 var inputField = document.getElementById("inputField");
-document.getElementById("inputField").focus();
+//document.getElementById("inputField").focus();
 const { ipcRenderer } = require('electron')
 ipcRenderer.on('asynchronous-reply', (event, arg) => {
   console.log(arg)
@@ -67,6 +65,36 @@ ipcRenderer.on('hideOutput', function(event, data){
 })
 ipcRenderer.on('showOutput', function(event, data){
   output.style.display = "flex";
+})
+ipcRenderer.on('options', function(event, data){
+  console.log(data);
+  var cleanData = JSON.stringify(data);
+  cleanData = cleanData.replace("{","").replace("}","").replace(",","\n");
+  output.innerHTML = cleanData;
+  mainWindow.classList.add("showingLyrics")
+  showingLyrics = true;
+})
+ipcRenderer.on('focusInput', function(event, data){
+  setTimeout(function(){
+    inputField.click();
+  },2000)
+  animateCSS("#body","slideInUp")
+})
+ipcRenderer.on('slideOut', function(event, data){
+  animateCSS("#body","slideOutDown")
+})
+ipcRenderer.on("hideControls", function(event, data){
+  spotControls.parentNode.removeChild(spotControls);
+})
+ipcRenderer.on('updatePlaybackState', function(event, data){
+  var button = document.getElementById("toggleButton");
+  if(data == true){
+    isPlaying = data;
+    button.src = "play.png";
+  }else{
+    isPlaying = data;
+    button.src = "pause.png";
+  }
 })
 var states = ["default", "miniPlayer", "configMenu"]
 var currentState = "default";
@@ -129,30 +157,25 @@ function switchState(state){
 }
 var username, assistantName, assistantShortcut, theme, cusW, cusH, secondScreen, useSpotify, spotifyMiniPlayer, showTitleOnMiniPlayer;
 //READ Config
+var configLoad = require("./loadConfig.js");
 function loadConfig(){
-  var initConfig = readConfig();
-  username = initConfig["username"];
-  assistantName = initConfig["assistantName"]
-  assistantShortcut = initConfig["assistantShortcut"]
-  cusW = initConfig["windowWidth"];
-  cusH = initConfig["windowHeight"];
-  cusW = parseInt(cusW);
-  cusH = parseInt(cusH);
-  secondScreen = (initConfig["secondScreen"] === 'true');
-  useSpotify = (initConfig["useSpotify"] === 'true');
-  spotifyMiniPlayer = (initConfig["spotifyMiniPlayer"]==='true');
-  showTitleOnMiniPlayer = (initConfig["showTitleOnMiniPlayer"]==='true');
+  var initConfig = configLoad.config();
+  try {
+   if (fs.existsSync(__dirname + "/themes/" + parsedData["theme"] + "/bg.mp4")) {
+     bgVid = true;
+   }
+ } catch(err) {
+   console.error(err)
+ }
 }
 var config;
 function populateConfigMenu(){
-  let rawData = fs.readFileSync('config.json');
-  console.log(rawData);
-  //console.log("poo")
-  config = JSON.parse(rawData);
+  config = configLoad.config();
   var configForm = document.getElementById("configForm");
   var configString = "";
   var values = Object.values(config);
   var keys = Object.keys(config);
+  configString += "<button class='spotifyAuthButton' onclick='requestSpotifyAuth()'>Link Spotify</button><br/>"
   for(var i = 0; i < values.length; i++){
     configString += "<span class='configItem'>" + keys[i] + " : <input name='" + keys[i] + "' class='configInput' type='text' value='" + values[i] + "'></span><br/>";
   }
@@ -171,9 +194,14 @@ function saveConfig(event){
   }
   jString = jString.substring(0,jString.length - 2);
   jString += '\n}';
-  fs.writeFileSync('config.json',jString);
+  //var configSave = require("./saveConfig.js")(jString);
+  saveConfigFile(jString);
+  //configSave.saveConfig(jString);
   ipcRenderer.send('console',jString)
   switchState("default")
+}
+function requestSpotifyAuth(){
+  ipcRenderer.send('requestSpotifyAuth')
 }
 function toggleMusic(){
   ipcRenderer.send("toggleMusic");
@@ -184,36 +212,6 @@ function nextTrack(){
 function previousTrack(){
   ipcRenderer.send("previousSong");
 }
-ipcRenderer.on('options', function(event, data){
-  console.log(data);
-  var cleanData = JSON.stringify(data);
-  cleanData = cleanData.replace("{","").replace("}","").replace(",","\n");
-  output.innerHTML = cleanData;
-  mainWindow.classList.add("showingLyrics")
-  showingLyrics = true;
-})
-ipcRenderer.on('focusInput', function(event, data){
-  setTimeout(function(){
-    inputField.click();
-  },2000)
-  animateCSS("#body","slideInUp")
-})
-ipcRenderer.on('slideOut', function(event, data){
-  animateCSS("#body","slideOutDown")
-})
-ipcRenderer.on("hideControls", function(event, data){
-  spotControls.parentNode.removeChild(spotControls);
-})
-ipcRenderer.on('updatePlaybackState', function(event, data){
-  var button = document.getElementById("toggleButton");
-  if(data == true){
-    isPlaying = data;
-    button.src = "play.png";
-  }else{
-    isPlaying = data;
-    button.src = "pause.png";
-  }
-})
 window.addEventListener("keyup", sendQuery, true);
 function sendQuery(e){
 if(e.keyCode == 13){
