@@ -158,15 +158,8 @@ function switchState(state){
 var username, assistantName, assistantShortcut, theme, cusW, cusH, secondScreen, useSpotify, spotifyMiniPlayer, showTitleOnMiniPlayer;
 //READ Config
 var configLoad = require("./loadConfig.js");
-function loadConfig(){
-  var initConfig = configLoad.config();
-  try {
-   if (fs.existsSync(__dirname + "/themes/" + parsedData["theme"] + "/bg.mp4")) {
-     bgVid = true;
-   }
- } catch(err) {
-   console.error(err)
- }
+function getPath(){
+  return __dirname;
 }
 var config;
 function populateConfigMenu(){
@@ -175,7 +168,7 @@ function populateConfigMenu(){
   var configString = "";
   var values = Object.values(config);
   var keys = Object.keys(config);
-  configString += "<button class='spotifyAuthButton' onclick='requestSpotifyAuth()'>Link Spotify</button><br/>"
+  configString += "<button class='spotifyAuthButton' onclick='requestSpotifyAuth(event)'>Link Spotify</button><br/>"
   for(var i = 0; i < values.length; i++){
     configString += "<span class='configItem'>" + keys[i] + " : <input name='" + keys[i] + "' class='configInput' type='text' value='" + values[i] + "'></span><br/>";
   }
@@ -200,8 +193,10 @@ function saveConfig(event){
   ipcRenderer.send('console',jString)
   switchState("default")
 }
-function requestSpotifyAuth(){
+function requestSpotifyAuth(event){
+  event.preventDefault();
   ipcRenderer.send('requestSpotifyAuth')
+  switchState("default");
 }
 function toggleMusic(){
   ipcRenderer.send("toggleMusic");

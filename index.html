@@ -6,13 +6,14 @@
       <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
 	   <!--<link rel="stylesheet" type="text/css" href="themes/default/style.css">-->
      <script>
-      var fs = require('fs')
+       var fs = require('fs')
+       var path = __dirname;
        var bgVid = false;
        var configLoad = require("./loadConfig.js");
        var themeC = configLoad.config();
-       document.write('<link rel="stylesheet" type="text/css" href="themes/' + themeC["theme"] + '/style.css">');
+       document.write('<link rel="stylesheet" type="text/css" href="' + path + '/themes/' + themeC["theme"] + '/style.css">');
        try {
-        if (fs.existsSync("themes/" + themeC["theme"] + "/bg.mp4")) {
+        if (fs.existsSync(path + "/themes/" + themeC["theme"] + "/bg.mp4")) {
           bgVid = true;
         }
       } catch(err) {
@@ -36,7 +37,8 @@
         <img onclick="nextTrack()" class="mediaButton" src="forward.png"/>
       </div>
     <script>if(bgVid){
-      document.getElementById("mainWindow").insertAdjacentHTML('beforeend','<video id="bgVideo" loop autoplay><source src="themes/' + themeC["theme"] + '/bg.mp4" type="video/mp4"></video>')
+      document.getElementById("mainWindow").insertAdjacentHTML('beforeend',
+      '<video id="bgVideo" loop autoplay><source src="' + path + '/themes/' + themeC["theme"] + '/bg.mp4" type="video/mp4"></video>')
     }</script>
     <h1 id="output" class="">Howdy!</h1><br/></div>
   <link rel="stylesheet" src="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.0/animate.css">

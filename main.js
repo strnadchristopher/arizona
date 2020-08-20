@@ -6,7 +6,7 @@ var execa = require("execa");
 var currentInput;
 var win;
 const unhandled = require('electron-unhandled');
-var dirPath = app.getAppPath();
+var dirPath = __dirname;
 
 unhandled();
 // Enable live reload for Electron too
@@ -110,6 +110,7 @@ function createWindow () {
       win.hide();
   });
   win.on('blur', function(event){
+    console.log("blurring")
     if(!spotifyMiniPlayer || !spotifyAuthSuccess || !isPlaying){
       appShowing = false;
       win.webContents.send('slideOut')
@@ -119,7 +120,6 @@ function createWindow () {
     }else{
       win.webContents.send('miniPlayer');
     }
-
   })
   win.on('show', function(event){
     if(spotifyAuthSuccess){
@@ -219,9 +219,8 @@ function spotifyAuth(){
     }
   })
   //Open spotify auth link, get access code
-  var url = "https://accounts.spotify.com/en/authorize?response_type=code&client_id=eb0929c190354d7ea0b7e8a065ad68ed&scope=user-modify-playback-state%20user-read-currently-playing%20user-read-playback-state%20user-top-read&redirect_uri=https%3A%2F%2Fgithub.com%2F";
+  var url = "https://accounts.spotify.com/en/authorize?response_type=code&client_id=eb0929c190354d7ea0b7e8a065ad68ed&scope=user-modify-playback-state%20user-read-currently-playing%20user-read-playback-state%20user-top-read&redirect_uri=https%3A%2F%2Fstrnadchristopher.github.io%2FarizonaPage%2F";
   authWindow.loadURL(url)
-  authWindow.hide();
   var url = "";
   authWindow.on('page-title-updated', function(event, title){
     url = authWindow.webContents.getURL();
@@ -253,7 +252,7 @@ function getTokens(){
       form: {
         "grant_type": "authorization_code",
         "code": accessCode,
-        "redirect_uri": "https://github.com/"
+        "redirect_uri": "https://strnadchristopher.github.io/arizonaPage/"
       },
       headers: {'Authorization': "Basic ZWIwOTI5YzE5MDM1NGQ3ZWEwYjdlOGEwNjVhZDY4ZWQ6OWQ4NTRhMzY3OThhNGNlODljOTRiNmFlOWFlYjdmOTA="
     },
@@ -271,6 +270,7 @@ function getTokens(){
       spotifyAuthSuccess = true;
       //win.webContents.send('statusUpdate', '')
       console.log("Authorization successful");
+      win.webContents.send('statusUpdate', "Spotify Authorized");
       var t=setInterval(checkSpotifyArt,15000);
       checkSpotifyArt();
     })
@@ -283,7 +283,7 @@ function refreshToken(){
     form: {
       "grant_type": "refresh_token",
       "code": rToken,
-      "redirect_uri": "https://github.com/"
+      "redirect_uri": "https://strnadchristopher.github.io/arizonaPage/"
     },
     headers: {'Authorization': "Basic ZWIwOTI5YzE5MDM1NGQ3ZWEwYjdlOGEwNjVhZDY4ZWQ6OWQ4NTRhMzY3OThhNGNlODljOTRiNmFlOWFlYjdmOTA="
   },
@@ -432,7 +432,7 @@ async function getTrackInfo(){
 var artworkURL;
 var shouldUpdateTrack = true;
 function checkSpotifyArt(){
-  if(spotifyAuthSuccess && isPlaying && spotifyMiniPlayer){
+  if(spotifyAuthSuccess && spotifyMiniPlayer){
     console.log("Checking for song change.");
     getTrackInfo();
   }else{
@@ -446,7 +446,11 @@ async function getLyrics(trackData){
   if(ourSong.status.failed) return console.log('Bad Response');
   //console.log(ourSong.content[0].lyrics);
   //parentPort.postMessage("*" + ourSong.content[0].lyrics);
-  win.webContents.send('lyrics',ourSong.content[0].lyrics)
+  if(ourSong.content[0].lyrics != ""){
+    win.webContents.send('lyrics',ourSong.content[0].lyrics)
+  }else{
+    win.webContents.send('statusUpdate',"Couldn't find lyrics.")
+  }
 }
 
 app.whenReady().then(function(){
