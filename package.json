@@ -37,6 +37,7 @@
     "robotics"
   ],
   "build": {
+    "asar": "false",
     "extraResources": [
       {
         "from": "./extraResources/**",
@@ -70,7 +71,6 @@
     "@google-cloud/text-to-speech": "^3.1.0",
     "animate.css": "^4.1.0",
     "aws-sdk": "^2.729.0",
-    "electron": "^9.2.1",
     "electron-reload": "^1.5.0",
     "electron-unhandled": "^3.0.2",
     "execa": "^4.0.3",
@@ -86,6 +86,8 @@
     "webrtc-adapter": "^7.6.4"
   },
   "devDependencies": {
-    "electron-packager": "^15.0.0"
+    "electron": "^9.2.1",
+    "electron-packager": "^15.0.0",
+    "electron-builder": "^22.8.0"
   }
 }

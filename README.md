@@ -5,6 +5,10 @@ Arizona is a fully customizable personal assistant and Spotify miniplayer. It'll
 
 ![Picture of Arizona](https://github.com/strnadchristopher/arizona/blob/master/preview.gif?raw=true)
 
+## Official Beta Release
+
+Arizona is now in open beta! Get the latest release for Windows or Mac at https://github.com/strnadchristopher/arizona/releases/tag/v1.0.0-beta
+
 ## SPOTIFY UPDATE
 
 Spotify support is being added in version 0.0.11! If "spotifyMiniPlayer" is set to true in your config, an authorization window will pop up. And it should be as simple as any other oAuth situation.

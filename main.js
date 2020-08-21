@@ -110,7 +110,6 @@ function createWindow () {
       win.hide();
   });
   win.on('blur', function(event){
-    console.log("blurring")
     if(!spotifyMiniPlayer || !spotifyAuthSuccess || !isPlaying){
       appShowing = false;
       win.webContents.send('slideOut')
@@ -159,6 +158,7 @@ function createWindow () {
   loaded = true;
   const { app, Menu, Tray } = require('electron')
 
+  app.setName("Arizona");
   let tray = null
   tray = new Tray(iconpath)
   const contextMenu = Menu.buildFromTemplate([{
@@ -221,26 +221,27 @@ function spotifyAuth(){
   //Open spotify auth link, get access code
   var url = "https://accounts.spotify.com/en/authorize?response_type=code&client_id=eb0929c190354d7ea0b7e8a065ad68ed&scope=user-modify-playback-state%20user-read-currently-playing%20user-read-playback-state%20user-top-read&redirect_uri=https%3A%2F%2Fstrnadchristopher.github.io%2FarizonaPage%2F";
   authWindow.loadURL(url)
-  var url = "";
-  authWindow.on('page-title-updated', function(event, title){
-    url = authWindow.webContents.getURL();
-  })
-  var i = setInterval(function(){
-    var newURL = authWindow.webContents.getURL();
-    if(!newURL.includes("spotify")){ //If auth is done
-      if(newURL.split("?")[1] != void(0)){
-        clearInterval(i)
-        accessCode = newURL.split("?")[1].substring(5)
-        fs.writeFile(dirPath + '/spotifyAuth.txt', accessCode, function(err){
-          if (err) return console.log(err);
-          authWindow.close()
-          getTokens();
-        });
+  var newURL = authWindow.webContents.getURL();
+  if(!newURL.includes("spotify") && newURL != ""){}else{
+    var i = setInterval(function(){
+      newURL = authWindow.webContents.getURL();
+      if(!newURL.includes("spotify") && newURL != ""){ //If auth is done
+        console.log("finished");
+        win.webContents.send("rendererLog","Finished")
+        if(newURL.split("?")[1] != void(0)){
+          clearInterval(i)
+          accessCode = newURL.split("?")[1].substring(5)
+          fs.writeFile(dirPath + '/spotifyAuth.txt', accessCode, function(err){
+            if (err) return console.log(err);
+            authWindow.close()
+            getTokens();
+          });
+        }
+      }else{
+        authWindow.show();
       }
-    }else{
-      authWindow.show();
-    }
-  },5000)
+    },5000)
+  }
 }
 //Get The Initial set of tokens, access and refreshToken
 function getTokens(){
@@ -505,7 +506,7 @@ function showGoogle(query){
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
-    app.quit()
+    //app.quit()
   }
 })
 

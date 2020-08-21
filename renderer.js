@@ -45,6 +45,9 @@ ipcRenderer.on('trackInfo', function(event, data){
   currentTrackArtist = data.split(";")[0];
   output.innerHTML = currentTrackTitle + " by " + currentTrackArtist;
 })
+ipcRenderer.on('rendererLog', function(event, data){
+  console.log(data)
+})
 var showingLyrics = false;
 ipcRenderer.on('lyrics', function(event, data){
   console.log(data);
@@ -196,7 +199,7 @@ function saveConfig(event){
 function requestSpotifyAuth(event){
   event.preventDefault();
   ipcRenderer.send('requestSpotifyAuth')
-  switchState("default");
+  //switchState("default");
 }
 function toggleMusic(){
   ipcRenderer.send("toggleMusic");
