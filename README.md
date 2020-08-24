@@ -9,6 +9,10 @@ Arizona is a fully customizable personal assistant and Spotify miniplayer. It'll
 
 Arizona is now in open beta! Get the latest release for Windows or Mac at https://github.com/strnadchristopher/arizona/releases/tag/v1.0.0-beta
 
+## Shortcuts
+
+* Ctrl+Q - Pull up assistant
+
 ## SPOTIFY UPDATE
 
 Spotify support is being added in version 0.0.11! If "spotifyMiniPlayer" is set to true in your config, an authorization window will pop up. And it should be as simple as any other oAuth situation.
@@ -37,8 +41,7 @@ Arizona is meant to be a customizable open replacement for desktop assistants li
 ## New Features
 
 ### Themes
-Create a folder in the themes directory with the name of your theme and add a file named "style.css" then, in config.json, set your theme to the name of the folder you created.
-You can add whatever css you want to the custom css file.
+Copy the folder of another theme in your 'themes' directory and rename it to whatever you want to call your theme. Then, in config.json, set your theme to the name of the folder you created. You can add whatever css you want to the custom css file.
 
 ### Background Video
 Place a mp4 in the directory of your theme with the name 'bg.mp4'. Then just makes sure "backgroundVideo" is set to true in config.json
@@ -80,13 +83,9 @@ Every line in 'inputs.txt' corresponds to the same line in 'responses.txt'. Sepa
 ## Commands
 
 ### All Platforms
-* 'google [query]'' - open google in your browser with your query, faster than cortana (example: "google the shaggy dog")
+* 'google [query]' - open google in your browser with your query, faster than cortana (example: "google the shaggy dog")
 * Any message that doesn't look like an input from the "inputs" file will be googled. So you can type "gene wilder" and it will google Gene Wilder
 * 'weather' - display the weather
-
-## Shortcuts
-
-* Ctrl+Q - Pull up assistant
 
 ## TO-DO
 
