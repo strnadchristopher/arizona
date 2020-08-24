@@ -109,15 +109,24 @@ function switchState(state){
     switch(state){
         case states[0]: //Default state
           currentState = state;
-          textBox.style.display = "flex";
-          textBox.style.height = "25%";
-          mainWindow.style.height = "75%";
-          mainWindow.style.marginTop = "50px";
-          bgVideo.style.width = "125%";
-          bgVideo.style.height = "125%";
+          textBox.classList.remove("textBox-miniplayer");
+          textBox.classList.remove("textBox-config");
+          textBox.classList.add("textBox-default");
+
+          mainWindow.classList.remove("mainWindow-miniplayer");
+          mainWindow.classList.remove("mainWindow-config");
+          mainWindow.classList.add("mainWindow-default");
+
+          bgVideo.classList.remove("bgVideo-miniplayer");
+          bgVideo.classList.remove("bgVideo-config");
+          bgVideo.classList.add("bgVideo-default");
+
           inputField.click();
           output.style.display = "block";
-          configMenu.style.display = "none";
+
+          configMenu.classList.remove("configMenu-miniplayer");
+          configMenu.classList.remove("configMenu-config");
+          configMenu.classList.add("configMenu-default");
           ipcRenderer.send("updateState", "default");
           if(spotControls != null){
             spotControls.style.display = "flex";
@@ -125,14 +134,21 @@ function switchState(state){
           break;
         case states[1]: // Miniplayer state
           currentState = state;
-          textBox.style.height = "0px";
-          textBox.style.display = "none";
-          mainWindow.style.height = "80%";
-          mainWindow.style.marginTop = "auto";
-          mainWindow.style.marginBottom = "0";
-          configMenu.style.display = "none";
-          bgVideo.style.width = "auto";
-          bgVideo.style.height = "auto";
+          textBox.classList.remove("textBox-default");
+          textBox.classList.remove("textBox-config");
+          textBox.classList.add("textBox-miniplayer");
+
+          mainWindow.classList.remove("mainWindow-default");
+          mainWindow.classList.remove("mainWindow-config");
+          mainWindow.classList.add("mainWindow-miniplayer");
+
+          configMenu.classList.remove("configMenu-config");
+          configMenu.classList.remove("configMenu-default");
+          configMenu.classList.add("configMenu-miniplayer");
+
+          bgVideo.classList.remove("bgVideo-default");
+          bgVideo.classList.remove("bgVideo-config");
+          bgVideo.classList.add("bgVideo-miniplayer");
           ipcRenderer.send("updateState", "miniplayer");
           if(spotControls != null){
             spotControls.style.display = "flex";
@@ -140,13 +156,23 @@ function switchState(state){
           break;
         case states[2]: // Config
           currentState = state;
-          textBox.style.height = "0px";
-          mainWindow.style.height = "90%";
+          textBox.classList.remove("textBox-default");
+          textBox.classList.remove("textBox-miniplayer");
+          textBox.classList.add("textBox-config");
+
+          mainWindow.classList.remove("mainWindow-default");
+          mainWindow.classList.remove("mainWindow-miniplayer");
+          mainWindow.classList.add("mainWindow-config");
+
           output.style.display = "none";
-          configMenu.style.display = "block";
-          configMenu.style.overflowY = "scroll";
-          bgVideo.style.width = "auto";
-          bgVideo.style.height = "auto";
+
+          configMenu.classList.remove("configMenu-default");
+          configMenu.classList.remove("configMenu-miniplayer");
+          configMenu.classList.add("configMenu-config")
+
+          bgVideo.classList.remove("bgVideo-default");
+          bgVideo.classList.remove("bgVideo-miniplayer");
+          bgVideo.classList.add("bgVideo-config");
           if(spotControls != null){
             spotControls.style.display = "none";
           }

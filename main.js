@@ -9,6 +9,8 @@ const unhandled = require('electron-unhandled');
 var dirPath = __dirname;
 
 unhandled();
+
+const greetings = ["Hey, %username%!", "%username%, what's up?", "Wassup wassup.", "You rang?"];
 // Enable live reload for Electron too
 require('electron-reload')(__dirname);
 // Asynchronous read inputs and outputs
@@ -174,7 +176,9 @@ function createWindow () {
   ])
   tray.setToolTip('Arizona')
   tray.setContextMenu(contextMenu)
-
+  setTimeout(function(){
+    win.webContents.send("statusUpdate", greetings[Math.floor(Math.random()*greetings.length)].replace("%username%", username));
+  }, 1000)
   if(useSpotify){
     try {
       if (fs.existsSync(__dirname + "/spotifyAuth.txt")) {
@@ -194,6 +198,7 @@ function createWindow () {
     win.show();
   },1000)
 }
+
 
 //SPOTIFY STUFF HERE
 const request = require('request')
@@ -374,6 +379,7 @@ function playTrack(songName){
       return
     }
     console.log(`statusCode: ${res.statusCode}`)
+    console.log(body);
     //console.log(body)
     if(body["tracks"]["items"].length > 0){
       foundTrack = body["tracks"]["items"]["0"]["uri"] //Play the first song
@@ -385,6 +391,7 @@ function playTrack(songName){
             console.error(error)
             return
           }
+          console.log(body);
           console.log(`statusCode: ${res.statusCode}`)
           //console.log(body);
           skipTrack();

@@ -3,6 +3,7 @@
 	margin:0;
 	border-radius:5px;
 	overflow:hidden;
+	transition-duration:250ms;
 }
 @font-face{
 	font-family: Poppins;
@@ -188,6 +189,51 @@ video{
 	outline:none;
 }
 
+.textBox-default{
+	height:25%;
+	display:flex;
+}
+.textBox-miniplayer{
+	height:0;
+}
+.textBox-config{
+	height:0;
+	display:none;
+}
+.mainWindow-default{
+	height:75%;
+	marginTop:50px;
+}
+.mainWindow-miniplayer{
+	height:80%;
+	margin-top:auto;
+	margin-bottom:0;
+}
+.mainWindow-config{
+	height:90%;
+}
+.bgVideo-default{
+	width:125%;
+	height:125%;
+}
+.bgVideo-miniplayer{
+	width:auto;
+	height:auto;
+}
+.bgVideo-config{
+	width:auto;
+	height:auto;
+}
+.configMenu-default{
+	display;none;
+}
+.configMenu-miniplayer{
+	display:none;
+}
+.configMenu-config{
+	display:block !important;
+	overflow-y: scroll;
+}
 @-webkit-keyframes MoveUpDown {
   0%, 100% {
     transform: translate(0,0);
