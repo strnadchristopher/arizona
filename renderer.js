@@ -43,6 +43,8 @@ ipcRenderer.on('artwork', function(event, data){
 ipcRenderer.on('trackInfo', function(event, data){
   currentTrackTitle = data.split(";")[1];
   currentTrackArtist = data.split(";")[0];
+  mainWindow.classList.remove("showingLyrics");
+  showingLyrics = false;
   output.innerHTML = currentTrackTitle + " by " + currentTrackArtist;
 })
 ipcRenderer.on('rendererLog', function(event, data){

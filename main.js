@@ -7,8 +7,10 @@ var currentInput;
 var win;
 const unhandled = require('electron-unhandled');
 var dirPath = __dirname;
-
 unhandled();
+
+
+const { autoUpdater } = require('electron-updater');
 
 const greetings = ["Hey, %username%!", "%username%, what's up?", "Wassup wassup.", "You rang?"];
 // Enable live reload for Electron too
@@ -146,6 +148,7 @@ function createWindow () {
       win.webContents.send("switchState","default");
     }
     win.webContents.focus();
+    win.webContents.send("focusInput");
   })
 	globalShortcut.register('f7', function() {console.log('Showing console')
   win.webContents.openDevTools()})
@@ -158,7 +161,6 @@ function createWindow () {
   appShowing = true;
   // Open the DevTools.
   loaded = true;
-  const { app, Menu, Tray } = require('electron')
 
   app.setName("Arizona");
   let tray = null
@@ -197,7 +199,9 @@ function createWindow () {
   setTimeout(function(){
     win.show();
   },1000)
+  autoUpdater.checkForUpdatesAndNotify();
 }
+
 
 
 //SPOTIFY STUFF HERE
@@ -448,16 +452,15 @@ function checkSpotifyArt(){
   }
 }
 
-async function getLyrics(trackData){
-  const lyrics = require('node-lyrics-api');
-  let ourSong = await lyrics(trackName + " " + artist);
-  if(ourSong.status.failed) return console.log('Bad Response');
+async function getLyrics(){
+  const solenolyrics = require('solenolyrics');
+  let ourSong = await solenolyrics.requestLyricsFor(trackName + " " + artist);
   //console.log(ourSong.content[0].lyrics);
   //parentPort.postMessage("*" + ourSong.content[0].lyrics);
-  if(ourSong.content[0].lyrics != ""){
-    win.webContents.send('lyrics',ourSong.content[0].lyrics)
+  if(ourSong != ""){
+    win.webContents.send('lyrics',ourSong)
   }else{
-    win.webContents.send('statusUpdate',"Couldn't find lyrics.")
+    //win.webContents.send('statusUpdate',ourSong)
   }
 }
 
@@ -522,6 +525,7 @@ app.on('activate', () => {
   // dock icon is clicked and there are no other windows open.
   win.show()
   win.webContents.focus();
+  win.webContents.send("focusInput");
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow()
   }
@@ -544,16 +548,40 @@ function runService(workerData) {
 async function run() {
   const result = runService({currentInput,inputs,responses});
 }
-
-const { ipcMain } = require('electron')
-ipcMain.on('asynchronous-query', (event, arg) => { //When an input is given
-	if(arg != ""){
-		currentInput = arg;
-		run();
-	}
-
-})
 var state = "default";
+var setupQuestions = ["What's your name?","I can get the weather for you. What's a city near you? You don't have to tell me if you don't want to."];
+var setupAnswers = [];
+const { ipcMain } = require('electron')
+var scripts = ["setup", "restart-query"];
+var cScript = 0;
+ipcMain.on('asynchronous-query', (event, arg) => { //When an input is given
+  if(cScript == 0){
+    if(arg != ""){
+  		currentInput = arg;
+  		run();
+  	}
+  }else if(cScript == 1){ // Setup
+
+  }else if(cScript == 2){ // Restart-query
+    if(arg == "yes" || arg == "y"){
+      restartAndUpdate();
+      cScript = 0;
+    }else{
+      cScript = 0;
+      win.webContents.send("statusUpdate", "Ok, no problem.")
+    }
+  }
+})
+autoUpdater.on('update-available', () => {
+  win.webContents.send('statusUpdate',"Update available, downloading now.");
+});
+autoUpdater.on('update-downloaded', () => {
+  win.webContents.send('statusUpdate','Update downloaded. Ready to install?');
+  cScript = 2;
+});
+function restartAndUpdate(){
+  autoUpdater.quitAndInstall();
+}
 ipcMain.on('synchronous-message', (event, arg) => {
   console.log(arg) // prints "ping"
   event.returnValue = 'Sync return';
