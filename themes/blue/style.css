@@ -195,6 +195,7 @@ video{
 }
 .textBox-miniplayer{
 	height:0;
+	display:none;
 }
 .textBox-config{
 	height:0;

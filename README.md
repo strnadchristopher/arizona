@@ -9,6 +9,10 @@ Arizona is a fully customizable personal assistant and Spotify miniplayer. It'll
 
 Arizona is now in open beta! Get the latest release for Windows or Mac at https://github.com/strnadchristopher/arizona/releases/tag/v1.0.0-beta
 
+## Check us out on Itch.io
+
+https://arizona.itch.io/arizona
+
 ## Shortcuts
 
 * Ctrl+Q - Pull up assistant
