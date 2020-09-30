@@ -1,15 +1,15 @@
 {
 "theme" : "blue",
-"username" : "Chris",
+"username" : "Bro",
 "assistantName" : "Arizona",
 "assistantShortcut" : "ctrl+q",
 "windowWidth" : "450",
 "windowHeight" : "400",
 "secondScreen" : "true",
 "backgroundVideo" : "true",
-"useSpotify" : "true",
-"spotifyMiniPlayer" : "true",
+"useSpotify" : "false",
+"spotifyMiniPlayer" : "false",
 "showTitleOnMiniPlayer" : "false",
-"alwaysOnTop" : "true",
+"alwaysOnTop" : "false",
 "location" : "appleton"
 }

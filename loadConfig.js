@@ -7,3 +7,7 @@ var loadConfig = function loadConfig(){
     return parsedData;
 }
 module.exports.config = loadConfig;
+
+exports.saveConfig = function saveConfig(data){
+  fs.writeFileSync(__dirname + '/config.json',data);
+}

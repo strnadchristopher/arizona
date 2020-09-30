@@ -13,7 +13,7 @@
        var themeC = configLoad.config();
        document.write('<link rel="stylesheet" type="text/css" href="' + path + '/themes/' + themeC["theme"] + '/style.css">');
        try {
-        if (fs.existsSync(path + "/themes/" + themeC["theme"] + "/bg.mp4")) {
+        if (fs.existsSync(path + "/themes/" + themeC["theme"] + "/bg.mp4") && themeC["backgroundVideo"] === "true") {
           bgVid = true;
         }
       } catch(err) {
@@ -27,6 +27,12 @@
   <body id='body'>
     <div id="textBox" class="section"><input class="inputField" id="inputField" type='text' onclick="this.select()"></div>
     <div id="mainWindow" class="section colorBackground">
+      <div id="appDrawer">
+        <h1>Apps</h1>
+        <img class="appIcon" src="tinderIcon.png"/>
+        <img class="appIcon" src="twitterIcon.png"/>
+        <img class="appIcon" src="youtubeIcon.png"/>
+      </div>
       <div id="configMenu">
         <form id='configForm'></form>
       </div>

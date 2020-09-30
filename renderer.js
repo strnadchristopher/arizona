@@ -19,7 +19,7 @@ function handleAnimationEnd() {
 node.addEventListener('animationend', handleAnimationEnd);
 });
 const output = document.getElementById("output");
-
+var spotControls = document.getElementById("miniPlayerControls");
 var inputField = document.getElementById("inputField");
 //document.getElementById("inputField").focus();
 const { ipcRenderer } = require('electron')
@@ -89,7 +89,10 @@ ipcRenderer.on('slideOut', function(event, data){
   animateCSS("#body","slideOutDown")
 })
 ipcRenderer.on("hideControls", function(event, data){
-  spotControls.parentNode.removeChild(spotControls);
+  var children = document.getElementsByClassName("mediaButton");
+  for(let c of children){
+      c.parentNode.removeChild(c)
+  }
 })
 ipcRenderer.on('updatePlaybackState', function(event, data){
   var button = document.getElementById("toggleButton");
@@ -101,10 +104,11 @@ ipcRenderer.on('updatePlaybackState', function(event, data){
     button.src = "pause.png";
   }
 })
-var states = ["default", "miniPlayer", "configMenu"]
+var states = ["default", "miniPlayer", "configMenu", "browser"]
 var currentState = "default";
+
+// Element objects
 var configMenu = document.getElementById("configMenu");
-var spotControls = document.getElementById("miniPlayerControls");
 function switchState(state){
   if(state != currentState){
     console.log(state)
@@ -119,10 +123,11 @@ function switchState(state){
           mainWindow.classList.remove("mainWindow-config");
           mainWindow.classList.add("mainWindow-default");
 
-          bgVideo.classList.remove("bgVideo-miniplayer");
-          bgVideo.classList.remove("bgVideo-config");
-          bgVideo.classList.add("bgVideo-default");
-
+          if(bgVid){
+            bgVideo.classList.remove("bgVideo-miniplayer");
+            bgVideo.classList.remove("bgVideo-config");
+            bgVideo.classList.add("bgVideo-default");
+          }
           inputField.click();
           output.style.display = "block";
 
@@ -148,9 +153,11 @@ function switchState(state){
           configMenu.classList.remove("configMenu-default");
           configMenu.classList.add("configMenu-miniplayer");
 
-          bgVideo.classList.remove("bgVideo-default");
-          bgVideo.classList.remove("bgVideo-config");
-          bgVideo.classList.add("bgVideo-miniplayer");
+          if(bgVid){
+            bgVideo.classList.remove("bgVideo-default");
+            bgVideo.classList.remove("bgVideo-config");
+            bgVideo.classList.add("bgVideo-miniplayer");
+          }
           ipcRenderer.send("updateState", "miniplayer");
           if(spotControls != null){
             spotControls.style.display = "flex";
@@ -172,15 +179,39 @@ function switchState(state){
           configMenu.classList.remove("configMenu-miniplayer");
           configMenu.classList.add("configMenu-config")
 
-          bgVideo.classList.remove("bgVideo-default");
-          bgVideo.classList.remove("bgVideo-miniplayer");
-          bgVideo.classList.add("bgVideo-config");
+          if(bgVid){
+            bgVideo.classList.remove("bgVideo-default");
+            bgVideo.classList.remove("bgVideo-miniplayer");
+            bgVideo.classList.add("bgVideo-config");
+          }
           if(spotControls != null){
             spotControls.style.display = "none";
           }
           ipcRenderer.send("updateState", "default");
           populateConfigMenu();
           break;
+        case states[3]:
+          currentState = state;
+          textBox.classList.remove("textBox-default");
+          textBox.classList.remove("textBox-miniplayer");
+          textBox.classList.add("textBox-config");
+
+          mainWindow.classList.remove("mainWindow-default");
+          mainWindow.classList.remove("mainWindow-miniplayer");
+          mainWindow.classList.add("mainWindow-config");
+
+          output.style.display = "none";
+
+          configMenu.classList.remove("configMenu-default");
+          configMenu.classList.remove("configMenu-miniplayer");
+          configMenu.classList.remove("configMenu-config")
+          if(bgVideo !== null){
+            bgVideo.classList.remove("bgVideo-default");
+            bgVideo.classList.remove("bgVideo-miniplayer");
+            bgVideo.classList.remove("bgVideo-config");
+          }
+
+          ipcRenderer.send("updateState", "browser");
         default:
           currentState = states[0];
     }
@@ -219,7 +250,7 @@ function saveConfig(event){
   jString = jString.substring(0,jString.length - 2);
   jString += '\n}';
   //var configSave = require("./saveConfig.js")(jString);
-  saveConfigFile(jString);
+  configLoad.saveConfig(jString);
   //configSave.saveConfig(jString);
   ipcRenderer.send('console',jString)
   switchState("default")
@@ -250,5 +281,6 @@ if(e.keyCode == 13){
   }
 }
 
+// Animate slide in when everything is loaded
 animateCSS("#output", 'bounce');
 animateCSS("#body", 'slideInUp');

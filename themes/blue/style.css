@@ -211,7 +211,7 @@ video{
 	margin-bottom:0;
 }
 .mainWindow-config{
-	height:90%;
+	height:80%;
 }
 .bgVideo-default{
 	width:125%;
@@ -222,8 +222,8 @@ video{
 	height:auto;
 }
 .bgVideo-config{
-	width:auto;
-	height:auto;
+	width:150%;
+	height:150%;
 }
 .configMenu-default{
 	display;none;
@@ -234,6 +234,23 @@ video{
 .configMenu-config{
 	display:block !important;
 	overflow-y: scroll;
+}
+#appDrawer{
+	display:flex;
+	display:none;
+	width:100%;
+	height:100%;
+	justify-content: center;
+	align-items: center;
+}
+.appDrawer-open{
+	display:flex !important;
+}
+.appIcon{
+	width:20%;
+	height:auto;
+	cursor:pointer;
+	margin:auto;
 }
 @-webkit-keyframes MoveUpDown {
   0%, 100% {

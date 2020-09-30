@@ -1,6 +1,6 @@
 {
   "_from": "arizona",
-  "_id": "arizona@0.0.11",
+  "_id": "arizona@0.0.13",
   "_inBundle": false,
   "_integrity": "sha512-wEgMNFRDDVSm7RwNy6zpqDFsLsEvgM5Jv3vzAD01YVzisnggKoTg2x7sJQDkw5t6ywK8O1jvne1Ogg9+j3gpuQ==",
   "_location": "/arizona",
@@ -69,16 +69,13 @@
     "build": "electron-builder build --mac --win --publish never",
     "deploy": "electron-builder build --mac --win --publish always"
   },
-  "version": "0.0.12",
+  "version": "0.0.13",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.14.0",
     "@google-cloud/speech": "^4.1.1",
     "@google-cloud/text-to-speech": "^3.1.0",
     "animate.css": "^4.1.0",
     "aws-sdk": "^2.729.0",
-    "electron-reload": "^1.5.0",
-    "electron-unhandled": "^3.0.2",
-    "electron-updater": "^4.3.4",
     "execa": "^4.0.3",
     "node-audiorecorder": "^2.2.0",
     "node-lyrics-api": "^1.0.1",
