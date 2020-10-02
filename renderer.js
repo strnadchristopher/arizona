@@ -91,7 +91,8 @@ ipcRenderer.on('slideOut', function(event, data){
 ipcRenderer.on("hideControls", function(event, data){
   var children = document.getElementsByClassName("mediaButton");
   for(let c of children){
-      c.parentNode.removeChild(c)
+    c.style.display = "none";
+      //c.parentNode.removeChild(c)
   }
 })
 ipcRenderer.on('updatePlaybackState', function(event, data){

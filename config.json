@@ -7,7 +7,7 @@
 "windowHeight" : "400",
 "secondScreen" : "true",
 "backgroundVideo" : "true",
-"useSpotify" : "false",
+"useSpotify" : "true",
 "spotifyMiniPlayer" : "false",
 "showTitleOnMiniPlayer" : "false",
 "alwaysOnTop" : "false",
