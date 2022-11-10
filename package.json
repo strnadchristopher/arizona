@@ -90,7 +90,7 @@
     "webrtc-adapter": "^7.6.4"
   },
   "devDependencies": {
-    "electron": "^11.5.0",
+    "electron": "^18.3.7",
     "electron-packager": "^15.0.0",
     "electron-builder": "^22.8.0"
   }
